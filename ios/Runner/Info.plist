@@ -15,7 +15,9 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>NSCameraUsageDescription</key>
-	<string>Grimstock uses the camera to scan barcodes when you add items.</string>
+	<string>Grimstock uses the camera to scan barcodes and take photos of your items.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Grimstock lets you add photos of your items from your library.</string>
 	<key>CFBundleName</key>
 	<string>grimstock</string>
 	<key>CFBundlePackageType</key>

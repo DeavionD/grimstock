@@ -7,8 +7,10 @@ import 'features/insights/insights_screen.dart';
 import 'features/inventory/inventory_screen.dart';
 import 'features/inventory/item_detail_screen.dart';
 import 'features/inventory/item_form_screen.dart';
+import 'features/inventory/sell_screen.dart';
 import 'features/settings/platform_edit_screen.dart';
 import 'features/settings/settings_screen.dart';
+import 'features/sold/sale_detail_screen.dart';
 import 'features/sold/sold_screen.dart';
 
 GoRouter createRouter() => GoRouter(
@@ -26,7 +28,11 @@ GoRouter createRouter() => GoRouter(
               routes: [
                 GoRoute(
                   path: 'new',
-                  builder: (context, state) => const ItemFormScreen(),
+                  builder: (context, state) => ItemFormScreen(
+                    prefill: state.extra is ItemPrefill
+                        ? state.extra! as ItemPrefill
+                        : null,
+                  ),
                 ),
                 GoRoute(
                   path: ':id',
@@ -38,6 +44,11 @@ GoRouter createRouter() => GoRouter(
                       builder: (context, state) =>
                           ItemFormScreen(itemId: _id(state)),
                     ),
+                    GoRoute(
+                      path: 'sell',
+                      builder: (context, state) =>
+                          SellScreen(itemId: _id(state)),
+                    ),
                   ],
                 ),
               ],
@@ -48,6 +59,11 @@ GoRouter createRouter() => GoRouter(
         _tab('/sold', const SoldScreen()),
         _tab('/insights', const InsightsScreen()),
       ],
+    ),
+    // Outside the tab shell so both Inventory and Sold can open it.
+    GoRoute(
+      path: '/sales/:id',
+      builder: (context, state) => SaleDetailScreen(saleId: _id(state)),
     ),
     GoRoute(
       path: '/settings',
