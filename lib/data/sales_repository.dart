@@ -85,6 +85,9 @@ class SalesSummary {
   final int units;
   final int revenueCents;
   final int profitCents;
+
+  double? get marginPercent =>
+      revenueCents == 0 ? null : profitCents / revenueCents * 100;
 }
 
 class SalesRepository {

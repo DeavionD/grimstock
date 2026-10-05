@@ -28,6 +28,13 @@ Built with Flutter for iOS and Android. The product plan lives in the project's 
 - Up to 5 photos per item, from the camera or library, stored on the device (`lib/data/photo_store.dart`)
 - Home shows this month's profit and revenue
 
+## Milestone 4: dashboard, Insights and listings
+
+- Home dashboard for this week, month, year or all time: profit, revenue, margin and units sold, plus the best platform and category
+- Aging stock: active items unsold for 30, 60 and 90+ days, with the oldest listed
+- Insights tab built from the Sold archive (`lib/data/insights.dart`): where you sell best (by profit, items sold, speed or fees), best places to buy by return, best categories and brands, and the slowest movers
+- Listing writer on each item (`lib/data/listing_writer.dart`): a title and description in Standard, eBay, StockX/GOAT or Depop/Poshmark/Mercari style, editable and one tap to copy. Templates run on the phone, so it works offline and costs nothing
+
 ## Getting started
 
 ```sh
