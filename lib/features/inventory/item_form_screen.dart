@@ -9,6 +9,7 @@ import '../../data/providers.dart';
 import '../../theme/grim_theme.dart';
 import '../../widgets/money_field.dart';
 import '../../widgets/suggest_field.dart';
+import '../pro/paywall_screen.dart';
 import 'item_status_ui.dart';
 import 'scanner_screen.dart';
 
@@ -119,7 +120,29 @@ class _ItemFormScreenState extends ConsumerState<ItemFormScreen> {
   Future<void> _scan() async {
     final code = await Navigator.of(context)
         .push<String>(MaterialPageRoute(builder: (_) => const ScannerScreen()));
-    if (code != null && mounted) setState(() => _sku.text = code);
+    if (code == null || !mounted) return;
+    setState(() => _sku.text = code);
+    if (!ref.read(isProProvider)) return;
+
+    // Pro: fill the name and brand from the barcode when they're empty.
+    final info = await ref.read(upcLookupProvider).lookup(code);
+    if (!mounted) return;
+    final messenger = ScaffoldMessenger.of(context);
+    if (info == null) {
+      messenger.showSnackBar(
+        const SnackBar(content: Text('No product found for that barcode')),
+      );
+      return;
+    }
+    setState(() {
+      if (_name.text.trim().isEmpty) _name.text = info.title;
+      if (_brand.text.trim().isEmpty && info.brand != null) {
+        _brand.text = info.brand!;
+      }
+    });
+    messenger.showSnackBar(
+      SnackBar(content: Text('Filled in from barcode: ${info.title}')),
+    );
   }
 
   Future<void> _pickDate() async {
@@ -394,7 +417,14 @@ Future<void> showFreeLimitDialog(BuildContext context, int limit) {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('OK'),
+          child: const Text('Not now'),
+        ),
+        FilledButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+            showPaywall(context);
+          },
+          child: const Text('See Pro'),
         ),
       ],
     ),

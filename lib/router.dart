@@ -2,12 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import 'features/calculator/calculator_screen.dart';
+import 'features/expenses/expense_form_screen.dart';
+import 'features/expenses/expenses_screen.dart';
 import 'features/home/home_screen.dart';
 import 'features/insights/insights_screen.dart';
 import 'features/inventory/inventory_screen.dart';
 import 'features/inventory/item_detail_screen.dart';
 import 'features/inventory/item_form_screen.dart';
 import 'features/inventory/sell_screen.dart';
+import 'features/pro/paywall_screen.dart';
+import 'features/settings/export_screen.dart';
 import 'features/settings/platform_edit_screen.dart';
 import 'features/settings/settings_screen.dart';
 import 'features/sold/sale_detail_screen.dart';
@@ -66,9 +70,28 @@ GoRouter createRouter() => GoRouter(
       builder: (context, state) => SaleDetailScreen(saleId: _id(state)),
     ),
     GoRoute(
+      path: '/expenses',
+      builder: (context, state) => const ExpensesScreen(),
+      routes: [
+        GoRoute(
+          path: 'new',
+          builder: (context, state) => const ExpenseFormScreen(),
+        ),
+        GoRoute(
+          path: ':id',
+          builder: (context, state) => ExpenseFormScreen(expenseId: _id(state)),
+        ),
+      ],
+    ),
+    GoRoute(path: '/pro', builder: (context, state) => const PaywallScreen()),
+    GoRoute(
       path: '/settings',
       builder: (context, state) => const SettingsScreen(),
       routes: [
+        GoRoute(
+          path: 'export',
+          builder: (context, state) => const ExportScreen(),
+        ),
         GoRoute(
           path: 'platforms/:id',
           builder: (context, state) =>

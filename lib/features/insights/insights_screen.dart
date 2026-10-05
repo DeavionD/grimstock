@@ -7,6 +7,7 @@ import '../../data/insights.dart';
 import '../../data/providers.dart';
 import '../../theme/grim_theme.dart';
 import '../../widgets/empty_state.dart';
+import '../pro/paywall_screen.dart';
 
 /// How to rank platforms in the "Where you sell best" card.
 enum PlatformRank {
@@ -53,6 +54,7 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
   @override
   Widget build(BuildContext context) {
     final insights = ref.watch(insightsProvider(_period)).value;
+    final isPro = ref.watch(isProProvider);
     final anySales = (ref.watch(allSoldProvider).value ?? const []).isNotEmpty;
 
     return Scaffold(
@@ -80,7 +82,14 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
                           child: ChoiceChip(
                             label: Text(period.label),
                             selected: _period == period,
-                            onSelected: (_) => setState(() => _period = period),
+                            onSelected: (_) {
+                              // Date filters are a Pro feature.
+                              if (!isPro && period != Period.allTime) {
+                                showPaywall(context);
+                                return;
+                              }
+                              setState(() => _period = period);
+                            },
                           ),
                         ),
                     ],
@@ -99,30 +108,38 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
                 else ...[
                   _Section(
                     title: 'Where you sell best',
-                    trailing: PopupMenuButton<PlatformRank>(
-                      tooltip: 'Rank by',
-                      initialValue: _rank,
-                      onSelected: (rank) => setState(() => _rank = rank),
-                      itemBuilder: (context) => [
-                        for (final rank in PlatformRank.values)
-                          PopupMenuItem(value: rank, child: Text(rank.label)),
-                      ],
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            _rank.label,
-                            style: const TextStyle(color: GrimColors.hex),
+                    trailing: !isPro
+                        ? null
+                        : PopupMenuButton<PlatformRank>(
+                            tooltip: 'Rank by',
+                            initialValue: _rank,
+                            onSelected: (rank) => setState(() => _rank = rank),
+                            itemBuilder: (context) => [
+                              for (final rank in PlatformRank.values)
+                                PopupMenuItem(
+                                  value: rank,
+                                  child: Text(rank.label),
+                                ),
+                            ],
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  _rank.label,
+                                  style: const TextStyle(color: GrimColors.hex),
+                                ),
+                                const Icon(
+                                  Icons.arrow_drop_down,
+                                  color: GrimColors.hex,
+                                ),
+                              ],
+                            ),
                           ),
-                          const Icon(
-                            Icons.arrow_drop_down,
-                            color: GrimColors.hex,
-                          ),
-                        ],
-                      ),
-                    ),
                     children: [
-                      for (final p in _rank.sort(insights.platforms))
+                      for (final p
+                          in _rank
+                              .sort(insights.platforms)
+                              .take(isPro ? insights.platforms.length : 1))
                         _StatsRow(
                           stats: p,
                           detail:
@@ -136,7 +153,9 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
                     title: 'Best places to buy',
                     subtitle: 'Ranked by return on what you paid',
                     children: [
-                      for (final s in _byRoi(insights.sources))
+                      for (final s in _byRoi(
+                        insights.sources,
+                      ).take(isPro ? insights.sources.length : 1))
                         _StatsRow(
                           stats: s,
                           detail:
@@ -145,50 +164,62 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> {
                         ),
                     ],
                   ),
-                  _Section(
-                    title: 'Best categories',
-                    children: [
-                      for (final c in insights.categories)
-                        _StatsRow(
-                          stats: c,
-                          detail:
-                              '${c.units} sold · '
-                              '${_percent(c.marginPercent)} margin',
-                        ),
-                    ],
-                  ),
-                  _Section(
-                    title: 'Best brands',
-                    children: [
-                      for (final b in insights.brands.take(10))
-                        _StatsRow(
-                          stats: b,
-                          detail:
-                              '${b.units} sold · '
-                              '${_percent(b.marginPercent)} margin',
-                        ),
-                    ],
-                  ),
-                  _Section(
-                    title: 'Slowest movers',
-                    subtitle: 'Took the longest to sell',
-                    children: [
-                      for (final entry in insights.slowest)
-                        ListTile(
-                          title: Text(
-                            entry.item.name,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
+                  if (!isPro)
+                    const Card(
+                      child: ProLockTile(
+                        title: 'See the full breakdown',
+                        subtitle:
+                            'Every platform and source, your best categories '
+                            'and brands, slowest movers and date filters.',
+                      ),
+                    )
+                  else ...[
+                    _Section(
+                      title: 'Best categories',
+                      children: [
+                        for (final c in insights.categories)
+                          _StatsRow(
+                            stats: c,
+                            detail:
+                                '${c.units} sold · '
+                                '${_percent(c.marginPercent)} margin',
                           ),
-                          subtitle: Text(
-                            entry.platform?.name ?? 'Unknown platform',
-                            style: const TextStyle(color: GrimColors.ash),
+                      ],
+                    ),
+                    _Section(
+                      title: 'Best brands',
+                      children: [
+                        for (final b in insights.brands.take(10))
+                          _StatsRow(
+                            stats: b,
+                            detail:
+                                '${b.units} sold · '
+                                '${_percent(b.marginPercent)} margin',
                           ),
-                          trailing: Text(_days(entry.daysToSell.toDouble())),
-                          onTap: () => context.push('/sales/${entry.sale.id}'),
-                        ),
-                    ],
-                  ),
+                      ],
+                    ),
+                    _Section(
+                      title: 'Slowest movers',
+                      subtitle: 'Took the longest to sell',
+                      children: [
+                        for (final entry in insights.slowest)
+                          ListTile(
+                            title: Text(
+                              entry.item.name,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            subtitle: Text(
+                              entry.platform?.name ?? 'Unknown platform',
+                              style: const TextStyle(color: GrimColors.ash),
+                            ),
+                            trailing: Text(_days(entry.daysToSell.toDouble())),
+                            onTap: () =>
+                                context.push('/sales/${entry.sale.id}'),
+                          ),
+                      ],
+                    ),
+                  ],
                 ],
               ],
             ),

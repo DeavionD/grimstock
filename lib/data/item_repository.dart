@@ -102,12 +102,19 @@ extension ItemMath on Item {
 }
 
 class ItemRepository {
-  ItemRepository(this.db, {this.activeItemLimit});
+  ItemRepository(
+    this.db, {
+    this.activeItemLimit,
+    this.photoLimit = maxPhotosPerItem,
+  });
 
   final GrimstockDatabase db;
 
   /// Null means no limit (Pro).
   final int? activeItemLimit;
+
+  /// Photos allowed per item: 1 on the free plan, 5 on Pro.
+  final int photoLimit;
 
   Stream<List<ItemListEntry>> watchItems({
     String query = '',
@@ -417,8 +424,8 @@ class ItemRepository {
       final existing = await (db.select(
         db.itemPhotos,
       )..where((p) => p.itemId.equals(itemId))).get();
-      if (existing.length >= maxPhotosPerItem) {
-        throw StateError('An item can have at most $maxPhotosPerItem photos');
+      if (existing.length >= photoLimit) {
+        throw StateError('An item can have at most $photoLimit photos');
       }
       await db
           .into(db.itemPhotos)

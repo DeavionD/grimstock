@@ -8,6 +8,7 @@ import '../../data/item_repository.dart';
 import '../../data/providers.dart';
 import '../../theme/grim_theme.dart';
 import '../../widgets/stat_card.dart';
+import '../pro/paywall_screen.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -26,14 +27,24 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final summary = ref.watch(periodSummaryProvider(_period)).value;
     final insights = ref.watch(insightsProvider(_period)).value;
     final aging = ref.watch(agingStockProvider).value;
-    final profit = summary?.profitCents ?? 0;
-    final margin = summary?.marginPercent;
+    final expenses = ref.watch(periodExpensesProvider(_period)).value ?? 0;
+    // Real profit: sales profit minus expenses for the period.
+    final profit = (summary?.profitCents ?? 0) - expenses;
+    final revenue = summary?.revenueCents ?? 0;
+    final margin = revenue == 0 ? null : profit / revenue * 100;
     final text = Theme.of(context).textTheme;
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Grimstock'),
         actions: [
+          IconButton(
+            tooltip: 'Expenses',
+            icon: const Icon(Icons.receipt_long_outlined),
+            onPressed: () => ref.read(isProProvider)
+                ? context.push('/expenses')
+                : showPaywall(context),
+          ),
           IconButton(
             tooltip: 'Settings',
             icon: const Icon(Icons.settings_outlined),
@@ -72,10 +83,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               ),
               const SizedBox(width: 12),
               Expanded(
-                child: StatCard(
-                  label: 'Revenue',
-                  value: formatCents(summary?.revenueCents ?? 0),
-                ),
+                child: StatCard(label: 'Revenue', value: formatCents(revenue)),
               ),
             ],
           ),
@@ -97,6 +105,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               ),
             ],
           ),
+          if (expenses > 0) ...[
+            const SizedBox(height: 12),
+            StatCard(
+              label: 'Expenses (taken out of profit)',
+              value: formatCents(expenses),
+            ),
+          ],
           if (insights != null && !insights.isEmpty) ...[
             const SizedBox(height: 12),
             Card(
@@ -135,7 +150,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               Expanded(
                 child: StatCard(
                   label: 'Active items',
-                  value: '$activeCount / $freeActiveItemLimit',
+                  value: ref.watch(isProProvider)
+                      ? '$activeCount'
+                      : '$activeCount / $freeActiveItemLimit',
                 ),
               ),
             ],

@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../data/item_repository.dart';
 import '../../data/listing_writer.dart';
+import '../../data/providers.dart';
 import '../../theme/grim_theme.dart';
+import '../pro/paywall_screen.dart';
 
 Future<void> showListingSheet(BuildContext context, ItemDetails details) {
   return showModalBottomSheet<void>(
@@ -16,16 +19,16 @@ Future<void> showListingSheet(BuildContext context, ItemDetails details) {
 
 /// Writes a listing title and description in the chosen platform's style,
 /// ready to edit and copy into the selling app.
-class ListingSheet extends StatefulWidget {
+class ListingSheet extends ConsumerStatefulWidget {
   const ListingSheet({super.key, required this.details});
 
   final ItemDetails details;
 
   @override
-  State<ListingSheet> createState() => _ListingSheetState();
+  ConsumerState<ListingSheet> createState() => _ListingSheetState();
 }
 
-class _ListingSheetState extends State<ListingSheet> {
+class _ListingSheetState extends ConsumerState<ListingSheet> {
   final _title = TextEditingController();
   final _description = TextEditingController();
   ListingStyle _style = ListingStyle.standard;
@@ -58,6 +61,7 @@ class _ListingSheetState extends State<ListingSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final isPro = ref.watch(isProProvider);
     final insets = MediaQuery.viewInsetsOf(context);
     return Padding(
       padding: EdgeInsets.only(bottom: insets.bottom),
@@ -92,11 +96,22 @@ class _ListingSheetState extends State<ListingSheet> {
                 for (final style in ListingStyle.values)
                   ChoiceChip(
                     label: Text(style.label),
+                    avatar: isPro || style == ListingStyle.standard
+                        ? null
+                        : const Icon(Icons.lock_outline, size: 16),
                     selected: _style == style,
-                    onSelected: (_) => setState(() {
-                      _style = style;
-                      _write();
-                    }),
+                    onSelected: (_) {
+                      // Platform styles are a Pro feature.
+                      if (!isPro && style != ListingStyle.standard) {
+                        Navigator.of(context).pop();
+                        showPaywall(context);
+                        return;
+                      }
+                      setState(() {
+                        _style = style;
+                        _write();
+                      });
+                    },
                   ),
               ],
             ),

@@ -140,8 +140,18 @@ class Expenses extends Table with SyncColumns {
   RealColumn get miles => real().nullable()();
 }
 
+/// Small app settings, e.g. the mileage rate. Kept on this device.
+class AppSettings extends Table {
+  TextColumn get key => text()();
+  TextColumn get value => text()();
+
+  @override
+  Set<Column> get primaryKey => {key};
+}
+
 @DriftDatabase(
   tables: [
+    AppSettings,
     Categories,
     CategoryFields,
     Platforms,
@@ -217,6 +227,19 @@ class GrimstockDatabase extends _$GrimstockDatabase {
 
   Future<void> updatePlatform(Platform platform) =>
       update(platforms).replace(platform.copyWith(updatedAt: DateTime.now()));
+
+  Stream<String?> watchSetting(String key) =>
+      (select(appSettings)..where((s) => s.key.equals(key)))
+          .watchSingleOrNull()
+          .map((row) => row?.value);
+
+  Future<String?> getSetting(String key) async => (await (select(
+    appSettings,
+  )..where((s) => s.key.equals(key))).getSingleOrNull())?.value;
+
+  Future<void> setSetting(String key, String value) => into(
+    appSettings,
+  ).insertOnConflictUpdate(AppSettingsCompanion.insert(key: key, value: value));
 
   Future<int> addPlatform(String name) => into(
     platforms,

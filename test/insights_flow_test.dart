@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:grimstock/data/database.dart';
 import 'package:grimstock/data/item_repository.dart';
+import 'package:grimstock/data/pro.dart';
 import 'package:grimstock/data/providers.dart';
 import 'package:grimstock/data/sales_repository.dart';
 import 'package:grimstock/main.dart';
@@ -44,13 +45,16 @@ void main() {
     );
   }
 
-  Future<void> startApp(WidgetTester tester) async {
+  Future<void> startApp(WidgetTester tester, {bool pro = false}) async {
     tester.view.physicalSize = const Size(1080, 2280);
     tester.view.devicePixelRatio = 3;
     addTearDown(tester.view.reset);
     db = GrimstockDatabase(NativeDatabase.memory());
     addTearDown(db.close);
-    await tester.runAsync(seed);
+    await tester.runAsync(() async {
+      await seed();
+      if (pro) await db.setSetting(devProSettingKey, 'true');
+    });
     await tester.pumpWidget(
       ProviderScope(
         overrides: [databaseProvider.overrideWithValue(db)],
@@ -95,8 +99,24 @@ void main() {
     await unmount(tester);
   });
 
-  testWidgets('insights tab ranks platforms and sources', (tester) async {
+  testWidgets('free insights show the top platform and source, then Pro', (
+    tester,
+  ) async {
     await startApp(tester);
+    await tester.tap(tab('Insights'));
+    await tester.pumpAndSettle();
+    expect(find.text('Nike SNKRS'), findsOneWidget);
+    expect(find.text('Best brands'), findsNothing);
+    expect(find.text('See the full breakdown'), findsOneWidget);
+
+    await tester.tap(find.text('This year'));
+    await tester.pumpAndSettle();
+    expect(find.text('Grimstock Pro'), findsOneWidget);
+    await unmount(tester);
+  });
+
+  testWidgets('insights tab ranks platforms and sources', (tester) async {
+    await startApp(tester, pro: true);
     await tester.tap(tab('Insights'));
     await tester.pumpAndSettle();
 
@@ -104,6 +124,12 @@ void main() {
     expect(find.text('eBay'), findsWidgets);
     expect(find.text('Best places to buy'), findsOneWidget);
     expect(find.text('Nike SNKRS'), findsOneWidget);
+    await tester.scrollUntilVisible(
+      find.text('Best brands'),
+      300,
+      scrollable: find.byType(Scrollable).first,
+    );
+    expect(find.text('Nike'), findsWidgets);
 
     await unmount(tester);
   });
@@ -119,7 +145,7 @@ void main() {
         return null;
       },
     );
-    await startApp(tester);
+    await startApp(tester, pro: true);
     await tester.tap(tab('Inventory'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Dead stock hoodie'));
