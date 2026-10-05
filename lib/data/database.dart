@@ -3,11 +3,22 @@ import 'dart:math';
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 
+import 'platform_presets.dart';
+
 part 'database.g.dart';
 
 /// Where an item is in its life. Stored by name, so never rename a value
 /// without a migration.
 enum ItemStatus { purchased, inStock, listed, sold, shipped, returned }
+
+/// Statuses that count as "active" stock (not yet sold). Active items count
+/// toward the free plan's limit.
+const activeStatuses = [
+  ItemStatus.purchased,
+  ItemStatus.inStock,
+  ItemStatus.listed,
+  ItemStatus.returned,
+];
 
 /// Columns every synced table shares. `syncId` is the stable id used by
 /// Pro cloud sync; `updatedAt` decides which copy wins.
@@ -40,6 +51,14 @@ class Platforms extends Table with SyncColumns {
   IntColumn get fixedFeeCents => integer().withDefault(const Constant(0))();
   IntColumn get processingBasisPoints =>
       integer().withDefault(const Constant(0))();
+  IntColumn get minimumFeeCents => integer().withDefault(const Constant(0))();
+  IntColumn get smallSaleThresholdCents =>
+      integer().withDefault(const Constant(0))();
+  IntColumn get smallSaleFlatFeeCents =>
+      integer().withDefault(const Constant(0))();
+
+  /// Shown under the platform name, e.g. "Seller Level 1".
+  TextColumn get note => text().nullable()();
   BoolColumn get isCustom => boolean().withDefault(const Constant(false))();
 }
 
@@ -173,20 +192,8 @@ class GrimstockDatabase extends _$GrimstockDatabase {
       }
     }
 
-    // Fee values are filled in milestone 2, after checking each platform's
-    // current fee page. Until then every preset starts at 0%.
-    const platformNames = [
-      'eBay',
-      'StockX',
-      'GOAT',
-      'Mercari',
-      'Poshmark',
-      'Depop',
-      'Facebook Marketplace',
-      'Local / Cash',
-    ];
-    for (final name in platformNames) {
-      await into(platforms).insert(PlatformsCompanion.insert(name: name));
+    for (final preset in defaultPlatformPresets) {
+      await into(platforms).insert(preset);
     }
   }
 
@@ -195,15 +202,20 @@ class GrimstockDatabase extends _$GrimstockDatabase {
     final count = items.id.count();
     final query = selectOnly(items)
       ..addColumns([count])
-      ..where(
-        items.status.isNotIn([ItemStatus.sold.name, ItemStatus.shipped.name]),
-      );
+      ..where(items.status.isInValues(activeStatuses));
     return query.map((row) => row.read(count) ?? 0).watchSingle();
   }
 
   Stream<List<Category>> watchCategories() => (select(
     categories,
   )..orderBy([(c) => OrderingTerm(expression: c.sortOrder)])).watch();
+
+  Future<void> updatePlatform(Platform platform) =>
+      update(platforms).replace(platform.copyWith(updatedAt: DateTime.now()));
+
+  Future<int> addPlatform(String name) => into(
+    platforms,
+  ).insert(PlatformsCompanion.insert(name: name, isCustom: const Value(true)));
 
   Stream<List<Platform>> watchPlatforms() => (select(
     platforms,

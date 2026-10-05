@@ -13,6 +13,7 @@ class HomeScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final activeCount = ref.watch(activeItemCountProvider).value ?? 0;
+    final moneyInStock = ref.watch(moneyInStockProvider).value ?? 0;
     final text = Theme.of(context).textTheme;
 
     return Scaffold(
@@ -50,7 +51,10 @@ class HomeScreen extends ConsumerWidget {
           Row(
             children: [
               Expanded(
-                child: StatCard(label: 'Money in stock', value: formatCents(0)),
+                child: StatCard(
+                  label: 'Money in stock',
+                  value: formatCents(moneyInStock),
+                ),
               ),
               const SizedBox(width: 12),
               Expanded(

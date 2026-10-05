@@ -5,6 +5,21 @@ typedef Cents = int;
 
 final _usd = NumberFormat.simpleCurrency(name: 'USD');
 
+/// Basis points (1250) as a percent string ("12.5%").
+String formatBasisPoints(int basisPoints) {
+  final percent = basisPoints / 100;
+  final text = percent == percent.roundToDouble()
+      ? percent.toStringAsFixed(0)
+      : percent.toStringAsFixed(2).replaceFirst(RegExp(r'0$'), '');
+  return '$text%';
+}
+
+/// Parses "12.5" or "12.5%" into basis points. Null if invalid.
+int? parseBasisPoints(String input) {
+  final cents = parseCents(input.replaceAll('%', ''));
+  return cents == null || cents < 0 ? null : cents;
+}
+
 String formatCents(Cents cents) => _usd.format(cents / 100);
 
 /// Parses user input like "120", "120.5" or "$1,299.99" into cents.
@@ -24,12 +39,17 @@ Cents? parseCents(String input) {
 }
 
 /// A platform's selling fees: a percentage of the sale price, a fixed fee
-/// per order, and an optional payment processing percentage.
+/// per order, an optional payment processing percentage, an optional
+/// minimum total fee, and an optional flat fee for small sales (Poshmark
+/// charges a flat fee instead of its percentage under a price threshold).
 class FeeRule {
   const FeeRule({
     this.percentBasisPoints = 0,
     this.fixedCents = 0,
     this.processingBasisPoints = 0,
+    this.minimumFeeCents = 0,
+    this.smallSaleThresholdCents = 0,
+    this.smallSaleFlatFeeCents = 0,
   });
 
   /// Commission in basis points (1250 = 12.5%).
@@ -39,9 +59,20 @@ class FeeRule {
   /// Payment processing in basis points, charged on the sale price.
   final int processingBasisPoints;
 
+  /// The fees never total less than this (0 = no minimum).
+  final Cents minimumFeeCents;
+
+  /// Sales below this price pay [smallSaleFlatFeeCents] instead of the
+  /// regular fees (0 = no small-sale rule).
+  final Cents smallSaleThresholdCents;
+  final Cents smallSaleFlatFeeCents;
+
   Cents feesFor(Cents salePrice) {
+    if (salePrice <= 0) return 0;
+    if (salePrice < smallSaleThresholdCents) return smallSaleFlatFeeCents;
     final percent = salePrice * (percentBasisPoints + processingBasisPoints);
-    return (percent / 10000).round() + fixedCents;
+    final fees = (percent / 10000).round() + fixedCents;
+    return fees < minimumFeeCents ? minimumFeeCents : fees;
   }
 }
 

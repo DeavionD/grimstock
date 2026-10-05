@@ -11,6 +11,14 @@ Built with Flutter for iOS and Android. The product plan lives in the project's 
 - Offline-first local database with Drift/SQLite (`lib/data/database.dart`): items, categories with custom fields, platforms and fee presets, purchase sources, sales (the Sold archive), expenses and photos. Money is stored as integer cents; every row has a sync id for Pro cloud sync later
 - Profit math with platform fees, margin and ROI (`lib/core/money.dart`)
 
+## Milestone 2: inventory and profit
+
+- Add, edit, duplicate and delete items, with barcode scanning for the SKU (`lib/features/inventory/`)
+- Inventory list with search, status filters and sorting
+- Item detail with a "What would I make?" profit estimate per platform
+- Free plan limit of 25 active items, enforced in `lib/data/item_repository.dart`
+- US fee presets for eBay, StockX, GOAT, Mercari, Poshmark and Depop (`lib/data/platform_presets.dart`), editable in Settings
+
 ## Getting started
 
 ```sh
