@@ -57,4 +57,39 @@ void main() {
       expect(result.roiPercent, isNull);
     });
   });
+
+  group('FeeRule', () {
+    test('applies a minimum total fee', () {
+      const stockx = FeeRule(
+        percentBasisPoints: 900,
+        processingBasisPoints: 300,
+        minimumFeeCents: 500,
+      );
+      expect(stockx.feesFor(10000), 1200);
+      expect(stockx.feesFor(3000), 500);
+    });
+
+    test('uses the flat fee for small sales', () {
+      const poshmark = FeeRule(
+        percentBasisPoints: 2000,
+        smallSaleThresholdCents: 1500,
+        smallSaleFlatFeeCents: 295,
+      );
+      expect(poshmark.feesFor(1400), 295);
+      expect(poshmark.feesFor(1500), 300);
+      expect(poshmark.feesFor(5000), 1000);
+    });
+
+    test('charges nothing when nothing sold', () {
+      expect(const FeeRule(fixedCents: 40).feesFor(0), 0);
+    });
+  });
+
+  test('formats and parses percents', () {
+    expect(formatBasisPoints(1360), '13.6%');
+    expect(formatBasisPoints(900), '9%');
+    expect(formatBasisPoints(1275), '12.75%');
+    expect(parseBasisPoints('9.5%'), 950);
+    expect(parseBasisPoints('-1'), isNull);
+  });
 }

@@ -950,6 +950,50 @@ class $PlatformsTable extends Platforms
     requiredDuringInsert: false,
     defaultValue: const Constant(0),
   );
+  static const VerificationMeta _minimumFeeCentsMeta = const VerificationMeta(
+    'minimumFeeCents',
+  );
+  @override
+  late final GeneratedColumn<int> minimumFeeCents = GeneratedColumn<int>(
+    'minimum_fee_cents',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _smallSaleThresholdCentsMeta =
+      const VerificationMeta('smallSaleThresholdCents');
+  @override
+  late final GeneratedColumn<int> smallSaleThresholdCents =
+      GeneratedColumn<int>(
+        'small_sale_threshold_cents',
+        aliasedName,
+        false,
+        type: DriftSqlType.int,
+        requiredDuringInsert: false,
+        defaultValue: const Constant(0),
+      );
+  static const VerificationMeta _smallSaleFlatFeeCentsMeta =
+      const VerificationMeta('smallSaleFlatFeeCents');
+  @override
+  late final GeneratedColumn<int> smallSaleFlatFeeCents = GeneratedColumn<int>(
+    'small_sale_flat_fee_cents',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _noteMeta = const VerificationMeta('note');
+  @override
+  late final GeneratedColumn<String> note = GeneratedColumn<String>(
+    'note',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _isCustomMeta = const VerificationMeta(
     'isCustom',
   );
@@ -975,6 +1019,10 @@ class $PlatformsTable extends Platforms
     feeBasisPoints,
     fixedFeeCents,
     processingBasisPoints,
+    minimumFeeCents,
+    smallSaleThresholdCents,
+    smallSaleFlatFeeCents,
+    note,
     isCustom,
   ];
   @override
@@ -1045,6 +1093,39 @@ class $PlatformsTable extends Platforms
         ),
       );
     }
+    if (data.containsKey('minimum_fee_cents')) {
+      context.handle(
+        _minimumFeeCentsMeta,
+        minimumFeeCents.isAcceptableOrUnknown(
+          data['minimum_fee_cents']!,
+          _minimumFeeCentsMeta,
+        ),
+      );
+    }
+    if (data.containsKey('small_sale_threshold_cents')) {
+      context.handle(
+        _smallSaleThresholdCentsMeta,
+        smallSaleThresholdCents.isAcceptableOrUnknown(
+          data['small_sale_threshold_cents']!,
+          _smallSaleThresholdCentsMeta,
+        ),
+      );
+    }
+    if (data.containsKey('small_sale_flat_fee_cents')) {
+      context.handle(
+        _smallSaleFlatFeeCentsMeta,
+        smallSaleFlatFeeCents.isAcceptableOrUnknown(
+          data['small_sale_flat_fee_cents']!,
+          _smallSaleFlatFeeCentsMeta,
+        ),
+      );
+    }
+    if (data.containsKey('note')) {
+      context.handle(
+        _noteMeta,
+        note.isAcceptableOrUnknown(data['note']!, _noteMeta),
+      );
+    }
     if (data.containsKey('is_custom')) {
       context.handle(
         _isCustomMeta,
@@ -1092,6 +1173,22 @@ class $PlatformsTable extends Platforms
         DriftSqlType.int,
         data['${effectivePrefix}processing_basis_points'],
       )!,
+      minimumFeeCents: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}minimum_fee_cents'],
+      )!,
+      smallSaleThresholdCents: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}small_sale_threshold_cents'],
+      )!,
+      smallSaleFlatFeeCents: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}small_sale_flat_fee_cents'],
+      )!,
+      note: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}note'],
+      ),
       isCustom: attachedDatabase.typeMapping.read(
         DriftSqlType.bool,
         data['${effectivePrefix}is_custom'],
@@ -1114,6 +1211,12 @@ class Platform extends DataClass implements Insertable<Platform> {
   final int feeBasisPoints;
   final int fixedFeeCents;
   final int processingBasisPoints;
+  final int minimumFeeCents;
+  final int smallSaleThresholdCents;
+  final int smallSaleFlatFeeCents;
+
+  /// Shown under the platform name, e.g. "Seller Level 1".
+  final String? note;
   final bool isCustom;
   const Platform({
     required this.syncId,
@@ -1124,6 +1227,10 @@ class Platform extends DataClass implements Insertable<Platform> {
     required this.feeBasisPoints,
     required this.fixedFeeCents,
     required this.processingBasisPoints,
+    required this.minimumFeeCents,
+    required this.smallSaleThresholdCents,
+    required this.smallSaleFlatFeeCents,
+    this.note,
     required this.isCustom,
   });
   @override
@@ -1137,6 +1244,12 @@ class Platform extends DataClass implements Insertable<Platform> {
     map['fee_basis_points'] = Variable<int>(feeBasisPoints);
     map['fixed_fee_cents'] = Variable<int>(fixedFeeCents);
     map['processing_basis_points'] = Variable<int>(processingBasisPoints);
+    map['minimum_fee_cents'] = Variable<int>(minimumFeeCents);
+    map['small_sale_threshold_cents'] = Variable<int>(smallSaleThresholdCents);
+    map['small_sale_flat_fee_cents'] = Variable<int>(smallSaleFlatFeeCents);
+    if (!nullToAbsent || note != null) {
+      map['note'] = Variable<String>(note);
+    }
     map['is_custom'] = Variable<bool>(isCustom);
     return map;
   }
@@ -1151,6 +1264,10 @@ class Platform extends DataClass implements Insertable<Platform> {
       feeBasisPoints: Value(feeBasisPoints),
       fixedFeeCents: Value(fixedFeeCents),
       processingBasisPoints: Value(processingBasisPoints),
+      minimumFeeCents: Value(minimumFeeCents),
+      smallSaleThresholdCents: Value(smallSaleThresholdCents),
+      smallSaleFlatFeeCents: Value(smallSaleFlatFeeCents),
+      note: note == null && nullToAbsent ? const Value.absent() : Value(note),
       isCustom: Value(isCustom),
     );
   }
@@ -1171,6 +1288,14 @@ class Platform extends DataClass implements Insertable<Platform> {
       processingBasisPoints: serializer.fromJson<int>(
         json['processingBasisPoints'],
       ),
+      minimumFeeCents: serializer.fromJson<int>(json['minimumFeeCents']),
+      smallSaleThresholdCents: serializer.fromJson<int>(
+        json['smallSaleThresholdCents'],
+      ),
+      smallSaleFlatFeeCents: serializer.fromJson<int>(
+        json['smallSaleFlatFeeCents'],
+      ),
+      note: serializer.fromJson<String?>(json['note']),
       isCustom: serializer.fromJson<bool>(json['isCustom']),
     );
   }
@@ -1186,6 +1311,12 @@ class Platform extends DataClass implements Insertable<Platform> {
       'feeBasisPoints': serializer.toJson<int>(feeBasisPoints),
       'fixedFeeCents': serializer.toJson<int>(fixedFeeCents),
       'processingBasisPoints': serializer.toJson<int>(processingBasisPoints),
+      'minimumFeeCents': serializer.toJson<int>(minimumFeeCents),
+      'smallSaleThresholdCents': serializer.toJson<int>(
+        smallSaleThresholdCents,
+      ),
+      'smallSaleFlatFeeCents': serializer.toJson<int>(smallSaleFlatFeeCents),
+      'note': serializer.toJson<String?>(note),
       'isCustom': serializer.toJson<bool>(isCustom),
     };
   }
@@ -1199,6 +1330,10 @@ class Platform extends DataClass implements Insertable<Platform> {
     int? feeBasisPoints,
     int? fixedFeeCents,
     int? processingBasisPoints,
+    int? minimumFeeCents,
+    int? smallSaleThresholdCents,
+    int? smallSaleFlatFeeCents,
+    Value<String?> note = const Value.absent(),
     bool? isCustom,
   }) => Platform(
     syncId: syncId ?? this.syncId,
@@ -1209,6 +1344,11 @@ class Platform extends DataClass implements Insertable<Platform> {
     feeBasisPoints: feeBasisPoints ?? this.feeBasisPoints,
     fixedFeeCents: fixedFeeCents ?? this.fixedFeeCents,
     processingBasisPoints: processingBasisPoints ?? this.processingBasisPoints,
+    minimumFeeCents: minimumFeeCents ?? this.minimumFeeCents,
+    smallSaleThresholdCents:
+        smallSaleThresholdCents ?? this.smallSaleThresholdCents,
+    smallSaleFlatFeeCents: smallSaleFlatFeeCents ?? this.smallSaleFlatFeeCents,
+    note: note.present ? note.value : this.note,
     isCustom: isCustom ?? this.isCustom,
   );
   Platform copyWithCompanion(PlatformsCompanion data) {
@@ -1227,6 +1367,16 @@ class Platform extends DataClass implements Insertable<Platform> {
       processingBasisPoints: data.processingBasisPoints.present
           ? data.processingBasisPoints.value
           : this.processingBasisPoints,
+      minimumFeeCents: data.minimumFeeCents.present
+          ? data.minimumFeeCents.value
+          : this.minimumFeeCents,
+      smallSaleThresholdCents: data.smallSaleThresholdCents.present
+          ? data.smallSaleThresholdCents.value
+          : this.smallSaleThresholdCents,
+      smallSaleFlatFeeCents: data.smallSaleFlatFeeCents.present
+          ? data.smallSaleFlatFeeCents.value
+          : this.smallSaleFlatFeeCents,
+      note: data.note.present ? data.note.value : this.note,
       isCustom: data.isCustom.present ? data.isCustom.value : this.isCustom,
     );
   }
@@ -1242,6 +1392,10 @@ class Platform extends DataClass implements Insertable<Platform> {
           ..write('feeBasisPoints: $feeBasisPoints, ')
           ..write('fixedFeeCents: $fixedFeeCents, ')
           ..write('processingBasisPoints: $processingBasisPoints, ')
+          ..write('minimumFeeCents: $minimumFeeCents, ')
+          ..write('smallSaleThresholdCents: $smallSaleThresholdCents, ')
+          ..write('smallSaleFlatFeeCents: $smallSaleFlatFeeCents, ')
+          ..write('note: $note, ')
           ..write('isCustom: $isCustom')
           ..write(')'))
         .toString();
@@ -1257,6 +1411,10 @@ class Platform extends DataClass implements Insertable<Platform> {
     feeBasisPoints,
     fixedFeeCents,
     processingBasisPoints,
+    minimumFeeCents,
+    smallSaleThresholdCents,
+    smallSaleFlatFeeCents,
+    note,
     isCustom,
   );
   @override
@@ -1271,6 +1429,10 @@ class Platform extends DataClass implements Insertable<Platform> {
           other.feeBasisPoints == this.feeBasisPoints &&
           other.fixedFeeCents == this.fixedFeeCents &&
           other.processingBasisPoints == this.processingBasisPoints &&
+          other.minimumFeeCents == this.minimumFeeCents &&
+          other.smallSaleThresholdCents == this.smallSaleThresholdCents &&
+          other.smallSaleFlatFeeCents == this.smallSaleFlatFeeCents &&
+          other.note == this.note &&
           other.isCustom == this.isCustom);
 }
 
@@ -1283,6 +1445,10 @@ class PlatformsCompanion extends UpdateCompanion<Platform> {
   final Value<int> feeBasisPoints;
   final Value<int> fixedFeeCents;
   final Value<int> processingBasisPoints;
+  final Value<int> minimumFeeCents;
+  final Value<int> smallSaleThresholdCents;
+  final Value<int> smallSaleFlatFeeCents;
+  final Value<String?> note;
   final Value<bool> isCustom;
   const PlatformsCompanion({
     this.syncId = const Value.absent(),
@@ -1293,6 +1459,10 @@ class PlatformsCompanion extends UpdateCompanion<Platform> {
     this.feeBasisPoints = const Value.absent(),
     this.fixedFeeCents = const Value.absent(),
     this.processingBasisPoints = const Value.absent(),
+    this.minimumFeeCents = const Value.absent(),
+    this.smallSaleThresholdCents = const Value.absent(),
+    this.smallSaleFlatFeeCents = const Value.absent(),
+    this.note = const Value.absent(),
     this.isCustom = const Value.absent(),
   });
   PlatformsCompanion.insert({
@@ -1304,6 +1474,10 @@ class PlatformsCompanion extends UpdateCompanion<Platform> {
     this.feeBasisPoints = const Value.absent(),
     this.fixedFeeCents = const Value.absent(),
     this.processingBasisPoints = const Value.absent(),
+    this.minimumFeeCents = const Value.absent(),
+    this.smallSaleThresholdCents = const Value.absent(),
+    this.smallSaleFlatFeeCents = const Value.absent(),
+    this.note = const Value.absent(),
     this.isCustom = const Value.absent(),
   }) : name = Value(name);
   static Insertable<Platform> custom({
@@ -1315,6 +1489,10 @@ class PlatformsCompanion extends UpdateCompanion<Platform> {
     Expression<int>? feeBasisPoints,
     Expression<int>? fixedFeeCents,
     Expression<int>? processingBasisPoints,
+    Expression<int>? minimumFeeCents,
+    Expression<int>? smallSaleThresholdCents,
+    Expression<int>? smallSaleFlatFeeCents,
+    Expression<String>? note,
     Expression<bool>? isCustom,
   }) {
     return RawValuesInsertable({
@@ -1327,6 +1505,12 @@ class PlatformsCompanion extends UpdateCompanion<Platform> {
       if (fixedFeeCents != null) 'fixed_fee_cents': fixedFeeCents,
       if (processingBasisPoints != null)
         'processing_basis_points': processingBasisPoints,
+      if (minimumFeeCents != null) 'minimum_fee_cents': minimumFeeCents,
+      if (smallSaleThresholdCents != null)
+        'small_sale_threshold_cents': smallSaleThresholdCents,
+      if (smallSaleFlatFeeCents != null)
+        'small_sale_flat_fee_cents': smallSaleFlatFeeCents,
+      if (note != null) 'note': note,
       if (isCustom != null) 'is_custom': isCustom,
     });
   }
@@ -1340,6 +1524,10 @@ class PlatformsCompanion extends UpdateCompanion<Platform> {
     Value<int>? feeBasisPoints,
     Value<int>? fixedFeeCents,
     Value<int>? processingBasisPoints,
+    Value<int>? minimumFeeCents,
+    Value<int>? smallSaleThresholdCents,
+    Value<int>? smallSaleFlatFeeCents,
+    Value<String?>? note,
     Value<bool>? isCustom,
   }) {
     return PlatformsCompanion(
@@ -1352,6 +1540,12 @@ class PlatformsCompanion extends UpdateCompanion<Platform> {
       fixedFeeCents: fixedFeeCents ?? this.fixedFeeCents,
       processingBasisPoints:
           processingBasisPoints ?? this.processingBasisPoints,
+      minimumFeeCents: minimumFeeCents ?? this.minimumFeeCents,
+      smallSaleThresholdCents:
+          smallSaleThresholdCents ?? this.smallSaleThresholdCents,
+      smallSaleFlatFeeCents:
+          smallSaleFlatFeeCents ?? this.smallSaleFlatFeeCents,
+      note: note ?? this.note,
       isCustom: isCustom ?? this.isCustom,
     );
   }
@@ -1385,6 +1579,22 @@ class PlatformsCompanion extends UpdateCompanion<Platform> {
         processingBasisPoints.value,
       );
     }
+    if (minimumFeeCents.present) {
+      map['minimum_fee_cents'] = Variable<int>(minimumFeeCents.value);
+    }
+    if (smallSaleThresholdCents.present) {
+      map['small_sale_threshold_cents'] = Variable<int>(
+        smallSaleThresholdCents.value,
+      );
+    }
+    if (smallSaleFlatFeeCents.present) {
+      map['small_sale_flat_fee_cents'] = Variable<int>(
+        smallSaleFlatFeeCents.value,
+      );
+    }
+    if (note.present) {
+      map['note'] = Variable<String>(note.value);
+    }
     if (isCustom.present) {
       map['is_custom'] = Variable<bool>(isCustom.value);
     }
@@ -1402,6 +1612,10 @@ class PlatformsCompanion extends UpdateCompanion<Platform> {
           ..write('feeBasisPoints: $feeBasisPoints, ')
           ..write('fixedFeeCents: $fixedFeeCents, ')
           ..write('processingBasisPoints: $processingBasisPoints, ')
+          ..write('minimumFeeCents: $minimumFeeCents, ')
+          ..write('smallSaleThresholdCents: $smallSaleThresholdCents, ')
+          ..write('smallSaleFlatFeeCents: $smallSaleFlatFeeCents, ')
+          ..write('note: $note, ')
           ..write('isCustom: $isCustom')
           ..write(')'))
         .toString();
@@ -6036,6 +6250,10 @@ typedef $$PlatformsTableCreateCompanionBuilder = PlatformsCompanion Function({
   Value<int> feeBasisPoints,
   Value<int> fixedFeeCents,
   Value<int> processingBasisPoints,
+  Value<int> minimumFeeCents,
+  Value<int> smallSaleThresholdCents,
+  Value<int> smallSaleFlatFeeCents,
+  Value<String?> note,
   Value<bool> isCustom,
 });
 typedef $$PlatformsTableUpdateCompanionBuilder = PlatformsCompanion Function({
@@ -6047,6 +6265,10 @@ typedef $$PlatformsTableUpdateCompanionBuilder = PlatformsCompanion Function({
   Value<int> feeBasisPoints,
   Value<int> fixedFeeCents,
   Value<int> processingBasisPoints,
+  Value<int> minimumFeeCents,
+  Value<int> smallSaleThresholdCents,
+  Value<int> smallSaleFlatFeeCents,
+  Value<String?> note,
   Value<bool> isCustom,
 });
 
@@ -6120,6 +6342,26 @@ class $$PlatformsTableFilterComposer
 
   ColumnFilters<int> get processingBasisPoints => $composableBuilder(
     column: $table.processingBasisPoints,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get minimumFeeCents => $composableBuilder(
+    column: $table.minimumFeeCents,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get smallSaleThresholdCents => $composableBuilder(
+    column: $table.smallSaleThresholdCents,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get smallSaleFlatFeeCents => $composableBuilder(
+    column: $table.smallSaleFlatFeeCents,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get note => $composableBuilder(
+    column: $table.note,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -6203,6 +6445,26 @@ class $$PlatformsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<int> get minimumFeeCents => $composableBuilder(
+    column: $table.minimumFeeCents,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get smallSaleThresholdCents => $composableBuilder(
+    column: $table.smallSaleThresholdCents,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get smallSaleFlatFeeCents => $composableBuilder(
+    column: $table.smallSaleFlatFeeCents,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get note => $composableBuilder(
+    column: $table.note,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<bool> get isCustom => $composableBuilder(
     column: $table.isCustom,
     builder: (column) => ColumnOrderings(column),
@@ -6247,6 +6509,24 @@ class $$PlatformsTableAnnotationComposer
     column: $table.processingBasisPoints,
     builder: (column) => column,
   );
+
+  GeneratedColumn<int> get minimumFeeCents => $composableBuilder(
+    column: $table.minimumFeeCents,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get smallSaleThresholdCents => $composableBuilder(
+    column: $table.smallSaleThresholdCents,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get smallSaleFlatFeeCents => $composableBuilder(
+    column: $table.smallSaleFlatFeeCents,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get note =>
+      $composableBuilder(column: $table.note, builder: (column) => column);
 
   GeneratedColumn<bool> get isCustom =>
       $composableBuilder(column: $table.isCustom, builder: (column) => column);
@@ -6313,6 +6593,10 @@ class $$PlatformsTableTableManager
                 Value<int> feeBasisPoints = const Value.absent(),
                 Value<int> fixedFeeCents = const Value.absent(),
                 Value<int> processingBasisPoints = const Value.absent(),
+                Value<int> minimumFeeCents = const Value.absent(),
+                Value<int> smallSaleThresholdCents = const Value.absent(),
+                Value<int> smallSaleFlatFeeCents = const Value.absent(),
+                Value<String?> note = const Value.absent(),
                 Value<bool> isCustom = const Value.absent(),
               }) => PlatformsCompanion(
                 syncId: syncId,
@@ -6323,6 +6607,10 @@ class $$PlatformsTableTableManager
                 feeBasisPoints: feeBasisPoints,
                 fixedFeeCents: fixedFeeCents,
                 processingBasisPoints: processingBasisPoints,
+                minimumFeeCents: minimumFeeCents,
+                smallSaleThresholdCents: smallSaleThresholdCents,
+                smallSaleFlatFeeCents: smallSaleFlatFeeCents,
+                note: note,
                 isCustom: isCustom,
               ),
           createCompanionCallback:
@@ -6335,6 +6623,10 @@ class $$PlatformsTableTableManager
                 Value<int> feeBasisPoints = const Value.absent(),
                 Value<int> fixedFeeCents = const Value.absent(),
                 Value<int> processingBasisPoints = const Value.absent(),
+                Value<int> minimumFeeCents = const Value.absent(),
+                Value<int> smallSaleThresholdCents = const Value.absent(),
+                Value<int> smallSaleFlatFeeCents = const Value.absent(),
+                Value<String?> note = const Value.absent(),
                 Value<bool> isCustom = const Value.absent(),
               }) => PlatformsCompanion.insert(
                 syncId: syncId,
@@ -6345,6 +6637,10 @@ class $$PlatformsTableTableManager
                 feeBasisPoints: feeBasisPoints,
                 fixedFeeCents: fixedFeeCents,
                 processingBasisPoints: processingBasisPoints,
+                minimumFeeCents: minimumFeeCents,
+                smallSaleThresholdCents: smallSaleThresholdCents,
+                smallSaleFlatFeeCents: smallSaleFlatFeeCents,
+                note: note,
                 isCustom: isCustom,
               ),
           withReferenceMapper: (p0) => p0

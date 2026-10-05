@@ -5,6 +5,9 @@ import 'features/calculator/calculator_screen.dart';
 import 'features/home/home_screen.dart';
 import 'features/insights/insights_screen.dart';
 import 'features/inventory/inventory_screen.dart';
+import 'features/inventory/item_detail_screen.dart';
+import 'features/inventory/item_form_screen.dart';
+import 'features/settings/platform_edit_screen.dart';
 import 'features/settings/settings_screen.dart';
 import 'features/sold/sold_screen.dart';
 
@@ -15,7 +18,32 @@ GoRouter createRouter() => GoRouter(
       builder: (context, state, shell) => _TabShell(shell: shell),
       branches: [
         _tab('/home', const HomeScreen()),
-        _tab('/inventory', const InventoryScreen()),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/inventory',
+              builder: (context, state) => const InventoryScreen(),
+              routes: [
+                GoRoute(
+                  path: 'new',
+                  builder: (context, state) => const ItemFormScreen(),
+                ),
+                GoRoute(
+                  path: ':id',
+                  builder: (context, state) =>
+                      ItemDetailScreen(itemId: _id(state)),
+                  routes: [
+                    GoRoute(
+                      path: 'edit',
+                      builder: (context, state) =>
+                          ItemFormScreen(itemId: _id(state)),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ],
+        ),
         _tab('/calculator', const CalculatorScreen()),
         _tab('/sold', const SoldScreen()),
         _tab('/insights', const InsightsScreen()),
@@ -24,9 +52,18 @@ GoRouter createRouter() => GoRouter(
     GoRoute(
       path: '/settings',
       builder: (context, state) => const SettingsScreen(),
+      routes: [
+        GoRoute(
+          path: 'platforms/:id',
+          builder: (context, state) =>
+              PlatformEditScreen(platformId: _id(state)),
+        ),
+      ],
     ),
   ],
 );
+
+int _id(GoRouterState state) => int.parse(state.pathParameters['id']!);
 
 StatefulShellBranch _tab(String path, Widget screen) => StatefulShellBranch(
   routes: [GoRoute(path: path, builder: (context, state) => screen)],
