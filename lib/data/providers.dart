@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'database.dart';
 import 'item_repository.dart';
 import 'photo_store.dart';
+import 'insights.dart';
 import 'sales_repository.dart';
 
 /// The app's single local database. Overridden in tests with an in-memory one.
@@ -71,13 +72,54 @@ final saleProvider = StreamProvider.family<SoldEntry?, int>(
   (ref, saleId) => ref.watch(salesRepositoryProvider).watchSale(saleId),
 );
 
-/// Sales totals for the current calendar month.
-final thisMonthSummaryProvider = StreamProvider<SalesSummary>((ref) {
-  final now = DateTime.now();
-  return ref
+/// Sales totals from the start of [Period] until now.
+final periodSummaryProvider = StreamProvider.family<SalesSummary, Period>(
+  (ref, period) => ref
       .watch(salesRepositoryProvider)
-      .watchSummary(
-        from: DateTime(now.year, now.month),
-        to: DateTime(now.year, now.month + 1),
+      .watchSummary(from: period.start(DateTime.now())),
+);
+
+/// Every sale with its item, platform and source, newest first.
+final allSoldProvider = StreamProvider<List<SoldEntry>>(
+  (ref) => ref.watch(salesRepositoryProvider).watchSold(),
+);
+
+/// Insights for sales from the start of [Period] until now.
+final insightsProvider = Provider.family<AsyncValue<Insights>, Period>((
+  ref,
+  period,
+) {
+  final categories = ref.watch(categoriesProvider).value ?? const [];
+  final start = period.start(DateTime.now());
+  return ref
+      .watch(allSoldProvider)
+      .whenData(
+        (entries) => buildInsights(
+          [
+            for (final e in entries)
+              if (start == null || !e.sale.soldAt.isBefore(start)) e,
+          ],
+          categoryNames: {for (final c in categories) c.id: c.name},
+        ),
       );
 });
+
+/// Active items, oldest first, for the aging stock card.
+final agingStockProvider = StreamProvider<AgingStock>(
+  (ref) => ref
+      .watch(itemRepositoryProvider)
+      .watchItems(sort: ItemSort.oldest)
+      .map(
+        (entries) => AgingStock(
+          [
+            for (final e in entries)
+              if (e.item.isActive) e,
+          ]..sort(
+            (a, b) => (a.item.purchaseDate ?? a.item.createdAt).compareTo(
+              b.item.purchaseDate ?? b.item.createdAt,
+            ),
+          ),
+          DateTime.now(),
+        ),
+      ),
+);

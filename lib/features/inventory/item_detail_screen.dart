@@ -13,6 +13,7 @@ import '../../widgets/money_field.dart';
 import '../../data/sales_repository.dart';
 import 'item_form_screen.dart';
 import 'item_status_ui.dart';
+import 'listing_sheet.dart';
 import 'photo_strip.dart';
 
 class ItemDetailScreen extends ConsumerWidget {
@@ -188,6 +189,12 @@ class _ItemDetailView extends ConsumerWidget {
               label: Text(
                 item.quantity > 1 ? 'Mark some or all as sold' : 'Mark as sold',
               ),
+            ),
+            const SizedBox(height: 8),
+            OutlinedButton.icon(
+              onPressed: () => showListingSheet(context, details),
+              icon: const Icon(Icons.edit_note),
+              label: const Text('Write listing'),
             ),
           ],
           _ItemSales(itemId: item.id),
