@@ -110,20 +110,25 @@ class ItemPhotos extends Table with SyncColumns {
   IntColumn get sortOrder => integer().withDefault(const Constant(0))();
 }
 
-/// One row per unit sold, so multi-quantity items can sell one at a time.
-/// Sold rows are never deleted: they are the Sold archive and feed Insights.
+/// One row per sale. A sale can cover several units of a multi-quantity
+/// item. Amounts are totals for the whole sale, and [unitCostCents] is a
+/// snapshot of the item's cost when it sold, so later edits to the item
+/// don't change past profit. Sales are never deleted except by "Undo sale":
+/// they are the Sold archive and feed Insights.
 class Sales extends Table with SyncColumns {
   IntColumn get id => integer().autoIncrement()();
   IntColumn get itemId => integer().references(Items, #id)();
   IntColumn get platformId => integer().nullable().references(Platforms, #id)();
   DateTimeColumn get soldAt => dateTime()();
   IntColumn get quantity => integer().withDefault(const Constant(1))();
+  IntColumn get unitCostCents => integer().withDefault(const Constant(0))();
   IntColumn get salePriceCents => integer()();
   IntColumn get platformFeesCents => integer().withDefault(const Constant(0))();
   IntColumn get outboundShippingCents =>
       integer().withDefault(const Constant(0))();
   IntColumn get packagingCents => integer().withDefault(const Constant(0))();
   TextColumn get trackingNumber => text().nullable()();
+  DateTimeColumn get shippedAt => dateTime().nullable()();
 }
 
 class Expenses extends Table with SyncColumns {

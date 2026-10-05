@@ -19,6 +19,15 @@ Built with Flutter for iOS and Android. The product plan lives in the project's 
 - Free plan limit of 25 active items, enforced in `lib/data/item_repository.dart`
 - US fee presets for eBay, StockX, GOAT, Mercari, Poshmark and Depop (`lib/data/platform_presets.dart`), editable in Settings
 
+## Milestone 3: selling and the Sold archive
+
+- "Mark as sold" from any item: platform, sale price, fees filled from the platform's preset, shipping, packaging and tracking. Selling part of a multi-unit item lowers its quantity (`lib/data/sales_repository.dart`)
+- Each sale keeps a snapshot of the item's cost, so later edits don't rewrite past profit
+- Sold tab: every sale with where it was bought and where it sold, search, a platform filter and totals. Sale details show the full breakdown, mark shipped, and undo a sale recorded by mistake
+- Calculator tab: enter a buy price and expected sale price to rank every platform by profit, then add the item to inventory with its costs filled in
+- Up to 5 photos per item, from the camera or library, stored on the device (`lib/data/photo_store.dart`)
+- Home shows this month's profit and revenue
+
 ## Getting started
 
 ```sh

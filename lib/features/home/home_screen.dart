@@ -14,6 +14,8 @@ class HomeScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final activeCount = ref.watch(activeItemCountProvider).value ?? 0;
     final moneyInStock = ref.watch(moneyInStockProvider).value ?? 0;
+    final month = ref.watch(thisMonthSummaryProvider).value;
+    final profit = month?.profitCents ?? 0;
     final text = Theme.of(context).textTheme;
 
     return Scaffold(
@@ -37,13 +39,16 @@ class HomeScreen extends ConsumerWidget {
               Expanded(
                 child: StatCard(
                   label: 'Profit',
-                  value: formatCents(0),
-                  valueColor: GrimColors.ecto,
+                  value: formatCents(profit),
+                  valueColor: profit >= 0 ? GrimColors.ecto : GrimColors.blood,
                 ),
               ),
               const SizedBox(width: 12),
               Expanded(
-                child: StatCard(label: 'Revenue', value: formatCents(0)),
+                child: StatCard(
+                  label: 'Revenue',
+                  value: formatCents(month?.revenueCents ?? 0),
+                ),
               ),
             ],
           ),

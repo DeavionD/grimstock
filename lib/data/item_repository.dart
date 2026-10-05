@@ -231,7 +231,9 @@ class ItemRepository {
     return await query.map((row) => row.read(count) ?? 0).getSingle();
   }
 
-  Future<void> _checkLimit() async {
+  /// Throws [FreeLimitReached] when another active item would go over the
+  /// free plan's limit.
+  Future<void> checkActiveLimit() async {
     final limit = activeItemLimit;
     if (limit != null && await _activeItemCount() >= limit) {
       throw FreeLimitReached(limit);
@@ -263,7 +265,7 @@ class ItemRepository {
       final becomesActive =
           activeStatuses.contains(draft.status) &&
           (existing == null || !existing.isActive);
-      if (becomesActive) await _checkLimit();
+      if (becomesActive) await checkActiveLimit();
 
       String? clean(String? value) {
         final trimmed = value?.trim() ?? '';
@@ -325,7 +327,7 @@ class ItemRepository {
         db.items,
       )..where((i) => i.id.equals(id))).getSingle();
       if (!item.isActive && activeStatuses.contains(status)) {
-        await _checkLimit();
+        await checkActiveLimit();
       }
       await (db.update(db.items)..where((i) => i.id.equals(id))).write(
         ItemsCompanion(status: Value(status), updatedAt: Value(DateTime.now())),
@@ -337,7 +339,7 @@ class ItemRepository {
   /// Handy when buying several pairs of the same release.
   Future<int> duplicateItem(int id) {
     return db.transaction(() async {
-      await _checkLimit();
+      await checkActiveLimit();
       final item = await (db.select(
         db.items,
       )..where((i) => i.id.equals(id))).getSingle();
@@ -369,7 +371,9 @@ class ItemRepository {
     });
   }
 
-  Future<void> deleteItem(int id) {
+  /// Deletes an item and returns the local paths of its photos, so the
+  /// caller can remove the files.
+  Future<List<String>> deleteItem(int id) {
     return db.transaction(() async {
       final sales = await (db.select(
         db.sales,
@@ -378,8 +382,63 @@ class ItemRepository {
       await (db.delete(
         db.itemFieldValues,
       )..where((v) => v.itemId.equals(id))).go();
+      final photos = await (db.select(
+        db.itemPhotos,
+      )..where((p) => p.itemId.equals(id))).get();
       await (db.delete(db.itemPhotos)..where((p) => p.itemId.equals(id))).go();
       await (db.delete(db.items)..where((i) => i.id.equals(id))).go();
+      return [for (final p in photos) p.localPath];
     });
+  }
+
+  /// Most photos one item can have.
+  static const maxPhotosPerItem = 5;
+
+  Stream<List<ItemPhoto>> watchPhotos(int itemId) =>
+      (db.select(db.itemPhotos)
+            ..where((p) => p.itemId.equals(itemId))
+            ..orderBy([
+              (p) => OrderingTerm.asc(p.sortOrder),
+              (p) => OrderingTerm.asc(p.id),
+            ]))
+          .watch();
+
+  /// The first photo of every item that has one: item id → local path.
+  Stream<Map<int, String>> watchCoverPhotos() =>
+      (db.select(db.itemPhotos)..orderBy([
+            (p) => OrderingTerm.desc(p.sortOrder),
+            (p) => OrderingTerm.desc(p.id),
+          ]))
+          .watch()
+          .map((photos) => {for (final p in photos) p.itemId: p.localPath});
+
+  Future<void> addPhoto(int itemId, String localPath) {
+    return db.transaction(() async {
+      final existing = await (db.select(
+        db.itemPhotos,
+      )..where((p) => p.itemId.equals(itemId))).get();
+      if (existing.length >= maxPhotosPerItem) {
+        throw StateError('An item can have at most $maxPhotosPerItem photos');
+      }
+      await db
+          .into(db.itemPhotos)
+          .insert(
+            ItemPhotosCompanion.insert(
+              itemId: itemId,
+              localPath: localPath,
+              sortOrder: Value(existing.length),
+            ),
+          );
+    });
+  }
+
+  /// Removes a photo row and returns its local path.
+  Future<String?> deletePhoto(int photoId) async {
+    final photo = await (db.select(
+      db.itemPhotos,
+    )..where((p) => p.id.equals(photoId))).getSingleOrNull();
+    if (photo == null) return null;
+    await (db.delete(db.itemPhotos)..where((p) => p.id.equals(photoId))).go();
+    return photo.localPath;
   }
 }

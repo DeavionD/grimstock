@@ -12,11 +12,25 @@ import '../../widgets/suggest_field.dart';
 import 'item_status_ui.dart';
 import 'scanner_screen.dart';
 
+/// Costs carried over from the calculator into a new item.
+class ItemPrefill {
+  const ItemPrefill({
+    this.purchasePriceCents = 0,
+    this.purchaseTaxCents = 0,
+    this.inboundShippingCents = 0,
+  });
+
+  final int purchasePriceCents;
+  final int purchaseTaxCents;
+  final int inboundShippingCents;
+}
+
 /// Add a new item ([itemId] null) or edit an existing one.
 class ItemFormScreen extends ConsumerStatefulWidget {
-  const ItemFormScreen({super.key, this.itemId});
+  const ItemFormScreen({super.key, this.itemId, this.prefill});
 
   final int? itemId;
+  final ItemPrefill? prefill;
 
   @override
   ConsumerState<ItemFormScreen> createState() => _ItemFormScreenState();
@@ -52,6 +66,12 @@ class _ItemFormScreenState extends ConsumerState<ItemFormScreen> {
   void initState() {
     super.initState();
     if (_isEdit) _loadItem();
+    final prefill = widget.prefill;
+    if (prefill != null) {
+      _price.text = centsText(prefill.purchasePriceCents);
+      _tax.text = centsText(prefill.purchaseTaxCents);
+      _inbound.text = centsText(prefill.inboundShippingCents);
+    }
   }
 
   Future<void> _loadItem() async {

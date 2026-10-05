@@ -10,8 +10,10 @@ import '../../data/platform_presets.dart';
 import '../../data/providers.dart';
 import '../../theme/grim_theme.dart';
 import '../../widgets/money_field.dart';
+import '../../data/sales_repository.dart';
 import 'item_form_screen.dart';
 import 'item_status_ui.dart';
+import 'photo_strip.dart';
 
 class ItemDetailScreen extends ConsumerWidget {
   const ItemDetailScreen({super.key, required this.itemId});
@@ -80,7 +82,8 @@ class _ItemDetailView extends ConsumerWidget {
         );
         if (confirmed != true) return;
         try {
-          await repo.deleteItem(item.id);
+          final photos = await repo.deleteItem(item.id);
+          await ref.read(photoStoreProvider).delete(photos);
           if (context.mounted) context.pop();
         } on ItemHasSales {
           if (context.mounted) {
@@ -149,6 +152,8 @@ class _ItemDetailView extends ConsumerWidget {
             Text(subtitle, style: const TextStyle(color: GrimColors.ash)),
           ],
           const SizedBox(height: 16),
+          PhotoStrip(itemId: item.id),
+          const SizedBox(height: 16),
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: SegmentedButton<ItemStatus>(
@@ -175,6 +180,17 @@ class _ItemDetailView extends ConsumerWidget {
             const SizedBox(height: 8),
             StatusChip(item.status),
           ],
+          if (item.isActive) ...[
+            const SizedBox(height: 16),
+            FilledButton.icon(
+              onPressed: () => context.push('/inventory/${item.id}/sell'),
+              icon: const Icon(Icons.sell_outlined),
+              label: Text(
+                item.quantity > 1 ? 'Mark some or all as sold' : 'Mark as sold',
+              ),
+            ),
+          ],
+          _ItemSales(itemId: item.id),
           const SizedBox(height: 16),
           _ProfitEstimator(item: item),
           const SizedBox(height: 16),
@@ -409,6 +425,58 @@ class _InfoCard extends StatelessWidget {
                     Flexible(child: Text(value, textAlign: TextAlign.end)),
                   ],
                 ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// This item's past sales, with profit. Tapping one opens it in the Sold
+/// archive.
+class _ItemSales extends ConsumerWidget {
+  const _ItemSales({required this.itemId});
+
+  final int itemId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final sales = ref.watch(itemSalesProvider(itemId)).value ?? const [];
+    if (sales.isEmpty) return const SizedBox.shrink();
+    return Padding(
+      padding: const EdgeInsets.only(top: 16),
+      child: Card(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
+              child: Text(
+                'Sales',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+            ),
+            for (final sale in sales)
+              ListTile(
+                title: Text(
+                  '${sale.quantity > 1 ? '${sale.quantity} sold' : 'Sold'} '
+                  'for ${formatCents(sale.salePriceCents)}',
+                ),
+                subtitle: Text(
+                  DateFormat.yMMMd().format(sale.soldAt),
+                  style: const TextStyle(color: GrimColors.ash),
+                ),
+                trailing: Text(
+                  formatCents(sale.profitCents),
+                  style: TextStyle(
+                    fontWeight: FontWeight.w700,
+                    color: sale.profitCents >= 0
+                        ? GrimColors.ecto
+                        : GrimColors.blood,
+                  ),
+                ),
+                onTap: () => context.push('/sales/${sale.id}'),
               ),
           ],
         ),

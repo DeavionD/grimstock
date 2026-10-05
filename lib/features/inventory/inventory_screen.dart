@@ -8,6 +8,7 @@ import '../../data/item_repository.dart';
 import '../../data/providers.dart';
 import '../../theme/grim_theme.dart';
 import '../../widgets/empty_state.dart';
+import '../../widgets/item_thumb.dart';
 import 'item_status_ui.dart';
 
 class InventoryScreen extends ConsumerStatefulWidget {
@@ -101,6 +102,7 @@ class _InventoryScreenState extends ConsumerState<InventoryScreen> {
               builder: (context, snapshot) {
                 final entries = snapshot.data;
                 if (entries == null) return const SizedBox.shrink();
+                final covers = ref.watch(coverPhotosProvider).value ?? {};
                 if (entries.isEmpty) {
                   final filtering = _query.isNotEmpty || _status != null;
                   return EmptyState(
@@ -116,8 +118,10 @@ class _InventoryScreenState extends ConsumerState<InventoryScreen> {
                   padding: const EdgeInsets.fromLTRB(16, 8, 16, 96),
                   itemCount: entries.length,
                   separatorBuilder: (_, _) => const SizedBox(height: 8),
-                  itemBuilder: (context, index) =>
-                      _ItemTile(entry: entries[index]),
+                  itemBuilder: (context, index) => _ItemTile(
+                    entry: entries[index],
+                    coverPath: covers[entries[index].item.id],
+                  ),
                 );
               },
             ),
@@ -140,9 +144,10 @@ class _InventoryScreenState extends ConsumerState<InventoryScreen> {
 }
 
 class _ItemTile extends StatelessWidget {
-  const _ItemTile({required this.entry});
+  const _ItemTile({required this.entry, this.coverPath});
 
   final ItemListEntry entry;
+  final String? coverPath;
 
   @override
   Widget build(BuildContext context) {
@@ -162,6 +167,8 @@ class _ItemTile extends StatelessWidget {
           padding: const EdgeInsets.all(14),
           child: Row(
             children: [
+              ItemThumb(path: coverPath),
+              const SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

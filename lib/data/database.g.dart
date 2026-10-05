@@ -4132,6 +4132,18 @@ class $SalesTable extends Sales with TableInfo<$SalesTable, Sale> {
     requiredDuringInsert: false,
     defaultValue: const Constant(1),
   );
+  static const VerificationMeta _unitCostCentsMeta = const VerificationMeta(
+    'unitCostCents',
+  );
+  @override
+  late final GeneratedColumn<int> unitCostCents = GeneratedColumn<int>(
+    'unit_cost_cents',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
   static const VerificationMeta _salePriceCentsMeta = const VerificationMeta(
     'salePriceCents',
   );
@@ -4189,6 +4201,17 @@ class $SalesTable extends Sales with TableInfo<$SalesTable, Sale> {
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _shippedAtMeta = const VerificationMeta(
+    'shippedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> shippedAt = GeneratedColumn<DateTime>(
+    'shipped_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     syncId,
@@ -4199,11 +4222,13 @@ class $SalesTable extends Sales with TableInfo<$SalesTable, Sale> {
     platformId,
     soldAt,
     quantity,
+    unitCostCents,
     salePriceCents,
     platformFeesCents,
     outboundShippingCents,
     packagingCents,
     trackingNumber,
+    shippedAt,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -4266,6 +4291,15 @@ class $SalesTable extends Sales with TableInfo<$SalesTable, Sale> {
         quantity.isAcceptableOrUnknown(data['quantity']!, _quantityMeta),
       );
     }
+    if (data.containsKey('unit_cost_cents')) {
+      context.handle(
+        _unitCostCentsMeta,
+        unitCostCents.isAcceptableOrUnknown(
+          data['unit_cost_cents']!,
+          _unitCostCentsMeta,
+        ),
+      );
+    }
     if (data.containsKey('sale_price_cents')) {
       context.handle(
         _salePriceCentsMeta,
@@ -4313,6 +4347,12 @@ class $SalesTable extends Sales with TableInfo<$SalesTable, Sale> {
         ),
       );
     }
+    if (data.containsKey('shipped_at')) {
+      context.handle(
+        _shippedAtMeta,
+        shippedAt.isAcceptableOrUnknown(data['shipped_at']!, _shippedAtMeta),
+      );
+    }
     return context;
   }
 
@@ -4354,6 +4394,10 @@ class $SalesTable extends Sales with TableInfo<$SalesTable, Sale> {
         DriftSqlType.int,
         data['${effectivePrefix}quantity'],
       )!,
+      unitCostCents: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}unit_cost_cents'],
+      )!,
       salePriceCents: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}sale_price_cents'],
@@ -4374,6 +4418,10 @@ class $SalesTable extends Sales with TableInfo<$SalesTable, Sale> {
         DriftSqlType.string,
         data['${effectivePrefix}tracking_number'],
       ),
+      shippedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}shipped_at'],
+      ),
     );
   }
 
@@ -4392,11 +4440,13 @@ class Sale extends DataClass implements Insertable<Sale> {
   final int? platformId;
   final DateTime soldAt;
   final int quantity;
+  final int unitCostCents;
   final int salePriceCents;
   final int platformFeesCents;
   final int outboundShippingCents;
   final int packagingCents;
   final String? trackingNumber;
+  final DateTime? shippedAt;
   const Sale({
     required this.syncId,
     required this.createdAt,
@@ -4406,11 +4456,13 @@ class Sale extends DataClass implements Insertable<Sale> {
     this.platformId,
     required this.soldAt,
     required this.quantity,
+    required this.unitCostCents,
     required this.salePriceCents,
     required this.platformFeesCents,
     required this.outboundShippingCents,
     required this.packagingCents,
     this.trackingNumber,
+    this.shippedAt,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -4425,12 +4477,16 @@ class Sale extends DataClass implements Insertable<Sale> {
     }
     map['sold_at'] = Variable<DateTime>(soldAt);
     map['quantity'] = Variable<int>(quantity);
+    map['unit_cost_cents'] = Variable<int>(unitCostCents);
     map['sale_price_cents'] = Variable<int>(salePriceCents);
     map['platform_fees_cents'] = Variable<int>(platformFeesCents);
     map['outbound_shipping_cents'] = Variable<int>(outboundShippingCents);
     map['packaging_cents'] = Variable<int>(packagingCents);
     if (!nullToAbsent || trackingNumber != null) {
       map['tracking_number'] = Variable<String>(trackingNumber);
+    }
+    if (!nullToAbsent || shippedAt != null) {
+      map['shipped_at'] = Variable<DateTime>(shippedAt);
     }
     return map;
   }
@@ -4447,6 +4503,7 @@ class Sale extends DataClass implements Insertable<Sale> {
           : Value(platformId),
       soldAt: Value(soldAt),
       quantity: Value(quantity),
+      unitCostCents: Value(unitCostCents),
       salePriceCents: Value(salePriceCents),
       platformFeesCents: Value(platformFeesCents),
       outboundShippingCents: Value(outboundShippingCents),
@@ -4454,6 +4511,9 @@ class Sale extends DataClass implements Insertable<Sale> {
       trackingNumber: trackingNumber == null && nullToAbsent
           ? const Value.absent()
           : Value(trackingNumber),
+      shippedAt: shippedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(shippedAt),
     );
   }
 
@@ -4471,6 +4531,7 @@ class Sale extends DataClass implements Insertable<Sale> {
       platformId: serializer.fromJson<int?>(json['platformId']),
       soldAt: serializer.fromJson<DateTime>(json['soldAt']),
       quantity: serializer.fromJson<int>(json['quantity']),
+      unitCostCents: serializer.fromJson<int>(json['unitCostCents']),
       salePriceCents: serializer.fromJson<int>(json['salePriceCents']),
       platformFeesCents: serializer.fromJson<int>(json['platformFeesCents']),
       outboundShippingCents: serializer.fromJson<int>(
@@ -4478,6 +4539,7 @@ class Sale extends DataClass implements Insertable<Sale> {
       ),
       packagingCents: serializer.fromJson<int>(json['packagingCents']),
       trackingNumber: serializer.fromJson<String?>(json['trackingNumber']),
+      shippedAt: serializer.fromJson<DateTime?>(json['shippedAt']),
     );
   }
   @override
@@ -4492,11 +4554,13 @@ class Sale extends DataClass implements Insertable<Sale> {
       'platformId': serializer.toJson<int?>(platformId),
       'soldAt': serializer.toJson<DateTime>(soldAt),
       'quantity': serializer.toJson<int>(quantity),
+      'unitCostCents': serializer.toJson<int>(unitCostCents),
       'salePriceCents': serializer.toJson<int>(salePriceCents),
       'platformFeesCents': serializer.toJson<int>(platformFeesCents),
       'outboundShippingCents': serializer.toJson<int>(outboundShippingCents),
       'packagingCents': serializer.toJson<int>(packagingCents),
       'trackingNumber': serializer.toJson<String?>(trackingNumber),
+      'shippedAt': serializer.toJson<DateTime?>(shippedAt),
     };
   }
 
@@ -4509,11 +4573,13 @@ class Sale extends DataClass implements Insertable<Sale> {
     Value<int?> platformId = const Value.absent(),
     DateTime? soldAt,
     int? quantity,
+    int? unitCostCents,
     int? salePriceCents,
     int? platformFeesCents,
     int? outboundShippingCents,
     int? packagingCents,
     Value<String?> trackingNumber = const Value.absent(),
+    Value<DateTime?> shippedAt = const Value.absent(),
   }) => Sale(
     syncId: syncId ?? this.syncId,
     createdAt: createdAt ?? this.createdAt,
@@ -4523,6 +4589,7 @@ class Sale extends DataClass implements Insertable<Sale> {
     platformId: platformId.present ? platformId.value : this.platformId,
     soldAt: soldAt ?? this.soldAt,
     quantity: quantity ?? this.quantity,
+    unitCostCents: unitCostCents ?? this.unitCostCents,
     salePriceCents: salePriceCents ?? this.salePriceCents,
     platformFeesCents: platformFeesCents ?? this.platformFeesCents,
     outboundShippingCents: outboundShippingCents ?? this.outboundShippingCents,
@@ -4530,6 +4597,7 @@ class Sale extends DataClass implements Insertable<Sale> {
     trackingNumber: trackingNumber.present
         ? trackingNumber.value
         : this.trackingNumber,
+    shippedAt: shippedAt.present ? shippedAt.value : this.shippedAt,
   );
   Sale copyWithCompanion(SalesCompanion data) {
     return Sale(
@@ -4543,6 +4611,9 @@ class Sale extends DataClass implements Insertable<Sale> {
           : this.platformId,
       soldAt: data.soldAt.present ? data.soldAt.value : this.soldAt,
       quantity: data.quantity.present ? data.quantity.value : this.quantity,
+      unitCostCents: data.unitCostCents.present
+          ? data.unitCostCents.value
+          : this.unitCostCents,
       salePriceCents: data.salePriceCents.present
           ? data.salePriceCents.value
           : this.salePriceCents,
@@ -4558,6 +4629,7 @@ class Sale extends DataClass implements Insertable<Sale> {
       trackingNumber: data.trackingNumber.present
           ? data.trackingNumber.value
           : this.trackingNumber,
+      shippedAt: data.shippedAt.present ? data.shippedAt.value : this.shippedAt,
     );
   }
 
@@ -4572,11 +4644,13 @@ class Sale extends DataClass implements Insertable<Sale> {
           ..write('platformId: $platformId, ')
           ..write('soldAt: $soldAt, ')
           ..write('quantity: $quantity, ')
+          ..write('unitCostCents: $unitCostCents, ')
           ..write('salePriceCents: $salePriceCents, ')
           ..write('platformFeesCents: $platformFeesCents, ')
           ..write('outboundShippingCents: $outboundShippingCents, ')
           ..write('packagingCents: $packagingCents, ')
-          ..write('trackingNumber: $trackingNumber')
+          ..write('trackingNumber: $trackingNumber, ')
+          ..write('shippedAt: $shippedAt')
           ..write(')'))
         .toString();
   }
@@ -4591,11 +4665,13 @@ class Sale extends DataClass implements Insertable<Sale> {
     platformId,
     soldAt,
     quantity,
+    unitCostCents,
     salePriceCents,
     platformFeesCents,
     outboundShippingCents,
     packagingCents,
     trackingNumber,
+    shippedAt,
   );
   @override
   bool operator ==(Object other) =>
@@ -4609,11 +4685,13 @@ class Sale extends DataClass implements Insertable<Sale> {
           other.platformId == this.platformId &&
           other.soldAt == this.soldAt &&
           other.quantity == this.quantity &&
+          other.unitCostCents == this.unitCostCents &&
           other.salePriceCents == this.salePriceCents &&
           other.platformFeesCents == this.platformFeesCents &&
           other.outboundShippingCents == this.outboundShippingCents &&
           other.packagingCents == this.packagingCents &&
-          other.trackingNumber == this.trackingNumber);
+          other.trackingNumber == this.trackingNumber &&
+          other.shippedAt == this.shippedAt);
 }
 
 class SalesCompanion extends UpdateCompanion<Sale> {
@@ -4625,11 +4703,13 @@ class SalesCompanion extends UpdateCompanion<Sale> {
   final Value<int?> platformId;
   final Value<DateTime> soldAt;
   final Value<int> quantity;
+  final Value<int> unitCostCents;
   final Value<int> salePriceCents;
   final Value<int> platformFeesCents;
   final Value<int> outboundShippingCents;
   final Value<int> packagingCents;
   final Value<String?> trackingNumber;
+  final Value<DateTime?> shippedAt;
   const SalesCompanion({
     this.syncId = const Value.absent(),
     this.createdAt = const Value.absent(),
@@ -4639,11 +4719,13 @@ class SalesCompanion extends UpdateCompanion<Sale> {
     this.platformId = const Value.absent(),
     this.soldAt = const Value.absent(),
     this.quantity = const Value.absent(),
+    this.unitCostCents = const Value.absent(),
     this.salePriceCents = const Value.absent(),
     this.platformFeesCents = const Value.absent(),
     this.outboundShippingCents = const Value.absent(),
     this.packagingCents = const Value.absent(),
     this.trackingNumber = const Value.absent(),
+    this.shippedAt = const Value.absent(),
   });
   SalesCompanion.insert({
     this.syncId = const Value.absent(),
@@ -4654,11 +4736,13 @@ class SalesCompanion extends UpdateCompanion<Sale> {
     this.platformId = const Value.absent(),
     required DateTime soldAt,
     this.quantity = const Value.absent(),
+    this.unitCostCents = const Value.absent(),
     required int salePriceCents,
     this.platformFeesCents = const Value.absent(),
     this.outboundShippingCents = const Value.absent(),
     this.packagingCents = const Value.absent(),
     this.trackingNumber = const Value.absent(),
+    this.shippedAt = const Value.absent(),
   }) : itemId = Value(itemId),
        soldAt = Value(soldAt),
        salePriceCents = Value(salePriceCents);
@@ -4671,11 +4755,13 @@ class SalesCompanion extends UpdateCompanion<Sale> {
     Expression<int>? platformId,
     Expression<DateTime>? soldAt,
     Expression<int>? quantity,
+    Expression<int>? unitCostCents,
     Expression<int>? salePriceCents,
     Expression<int>? platformFeesCents,
     Expression<int>? outboundShippingCents,
     Expression<int>? packagingCents,
     Expression<String>? trackingNumber,
+    Expression<DateTime>? shippedAt,
   }) {
     return RawValuesInsertable({
       if (syncId != null) 'sync_id': syncId,
@@ -4686,12 +4772,14 @@ class SalesCompanion extends UpdateCompanion<Sale> {
       if (platformId != null) 'platform_id': platformId,
       if (soldAt != null) 'sold_at': soldAt,
       if (quantity != null) 'quantity': quantity,
+      if (unitCostCents != null) 'unit_cost_cents': unitCostCents,
       if (salePriceCents != null) 'sale_price_cents': salePriceCents,
       if (platformFeesCents != null) 'platform_fees_cents': platformFeesCents,
       if (outboundShippingCents != null)
         'outbound_shipping_cents': outboundShippingCents,
       if (packagingCents != null) 'packaging_cents': packagingCents,
       if (trackingNumber != null) 'tracking_number': trackingNumber,
+      if (shippedAt != null) 'shipped_at': shippedAt,
     });
   }
 
@@ -4704,11 +4792,13 @@ class SalesCompanion extends UpdateCompanion<Sale> {
     Value<int?>? platformId,
     Value<DateTime>? soldAt,
     Value<int>? quantity,
+    Value<int>? unitCostCents,
     Value<int>? salePriceCents,
     Value<int>? platformFeesCents,
     Value<int>? outboundShippingCents,
     Value<int>? packagingCents,
     Value<String?>? trackingNumber,
+    Value<DateTime?>? shippedAt,
   }) {
     return SalesCompanion(
       syncId: syncId ?? this.syncId,
@@ -4719,12 +4809,14 @@ class SalesCompanion extends UpdateCompanion<Sale> {
       platformId: platformId ?? this.platformId,
       soldAt: soldAt ?? this.soldAt,
       quantity: quantity ?? this.quantity,
+      unitCostCents: unitCostCents ?? this.unitCostCents,
       salePriceCents: salePriceCents ?? this.salePriceCents,
       platformFeesCents: platformFeesCents ?? this.platformFeesCents,
       outboundShippingCents:
           outboundShippingCents ?? this.outboundShippingCents,
       packagingCents: packagingCents ?? this.packagingCents,
       trackingNumber: trackingNumber ?? this.trackingNumber,
+      shippedAt: shippedAt ?? this.shippedAt,
     );
   }
 
@@ -4755,6 +4847,9 @@ class SalesCompanion extends UpdateCompanion<Sale> {
     if (quantity.present) {
       map['quantity'] = Variable<int>(quantity.value);
     }
+    if (unitCostCents.present) {
+      map['unit_cost_cents'] = Variable<int>(unitCostCents.value);
+    }
     if (salePriceCents.present) {
       map['sale_price_cents'] = Variable<int>(salePriceCents.value);
     }
@@ -4772,6 +4867,9 @@ class SalesCompanion extends UpdateCompanion<Sale> {
     if (trackingNumber.present) {
       map['tracking_number'] = Variable<String>(trackingNumber.value);
     }
+    if (shippedAt.present) {
+      map['shipped_at'] = Variable<DateTime>(shippedAt.value);
+    }
     return map;
   }
 
@@ -4786,11 +4884,13 @@ class SalesCompanion extends UpdateCompanion<Sale> {
           ..write('platformId: $platformId, ')
           ..write('soldAt: $soldAt, ')
           ..write('quantity: $quantity, ')
+          ..write('unitCostCents: $unitCostCents, ')
           ..write('salePriceCents: $salePriceCents, ')
           ..write('platformFeesCents: $platformFeesCents, ')
           ..write('outboundShippingCents: $outboundShippingCents, ')
           ..write('packagingCents: $packagingCents, ')
-          ..write('trackingNumber: $trackingNumber')
+          ..write('trackingNumber: $trackingNumber, ')
+          ..write('shippedAt: $shippedAt')
           ..write(')'))
         .toString();
   }
@@ -8794,11 +8894,13 @@ typedef $$SalesTableCreateCompanionBuilder = SalesCompanion Function({
   Value<int?> platformId,
   required DateTime soldAt,
   Value<int> quantity,
+  Value<int> unitCostCents,
   required int salePriceCents,
   Value<int> platformFeesCents,
   Value<int> outboundShippingCents,
   Value<int> packagingCents,
   Value<String?> trackingNumber,
+  Value<DateTime?> shippedAt,
 });
 typedef $$SalesTableUpdateCompanionBuilder = SalesCompanion Function({
   Value<String> syncId,
@@ -8809,11 +8911,13 @@ typedef $$SalesTableUpdateCompanionBuilder = SalesCompanion Function({
   Value<int?> platformId,
   Value<DateTime> soldAt,
   Value<int> quantity,
+  Value<int> unitCostCents,
   Value<int> salePriceCents,
   Value<int> platformFeesCents,
   Value<int> outboundShippingCents,
   Value<int> packagingCents,
   Value<String?> trackingNumber,
+  Value<DateTime?> shippedAt,
 });
 
 final class $$SalesTableReferences
@@ -8894,6 +8998,11 @@ class $$SalesTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<int> get unitCostCents => $composableBuilder(
+    column: $table.unitCostCents,
+    builder: (column) => ColumnFilters(column),
+  );
+
   ColumnFilters<int> get salePriceCents => $composableBuilder(
     column: $table.salePriceCents,
     builder: (column) => ColumnFilters(column),
@@ -8916,6 +9025,11 @@ class $$SalesTableFilterComposer
 
   ColumnFilters<String> get trackingNumber => $composableBuilder(
     column: $table.trackingNumber,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get shippedAt => $composableBuilder(
+    column: $table.shippedAt,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -9005,6 +9119,11 @@ class $$SalesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<int> get unitCostCents => $composableBuilder(
+    column: $table.unitCostCents,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<int> get salePriceCents => $composableBuilder(
     column: $table.salePriceCents,
     builder: (column) => ColumnOrderings(column),
@@ -9027,6 +9146,11 @@ class $$SalesTableOrderingComposer
 
   ColumnOrderings<String> get trackingNumber => $composableBuilder(
     column: $table.trackingNumber,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get shippedAt => $composableBuilder(
+    column: $table.shippedAt,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -9104,6 +9228,11 @@ class $$SalesTableAnnotationComposer
   GeneratedColumn<int> get quantity =>
       $composableBuilder(column: $table.quantity, builder: (column) => column);
 
+  GeneratedColumn<int> get unitCostCents => $composableBuilder(
+    column: $table.unitCostCents,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<int> get salePriceCents => $composableBuilder(
     column: $table.salePriceCents,
     builder: (column) => column,
@@ -9128,6 +9257,9 @@ class $$SalesTableAnnotationComposer
     column: $table.trackingNumber,
     builder: (column) => column,
   );
+
+  GeneratedColumn<DateTime> get shippedAt =>
+      $composableBuilder(column: $table.shippedAt, builder: (column) => column);
 
   $$ItemsTableAnnotationComposer get itemId {
     final $$ItemsTableAnnotationComposer composer = $composerBuilder(
@@ -9212,11 +9344,13 @@ class $$SalesTableTableManager
                 Value<int?> platformId = const Value.absent(),
                 Value<DateTime> soldAt = const Value.absent(),
                 Value<int> quantity = const Value.absent(),
+                Value<int> unitCostCents = const Value.absent(),
                 Value<int> salePriceCents = const Value.absent(),
                 Value<int> platformFeesCents = const Value.absent(),
                 Value<int> outboundShippingCents = const Value.absent(),
                 Value<int> packagingCents = const Value.absent(),
                 Value<String?> trackingNumber = const Value.absent(),
+                Value<DateTime?> shippedAt = const Value.absent(),
               }) => SalesCompanion(
                 syncId: syncId,
                 createdAt: createdAt,
@@ -9226,11 +9360,13 @@ class $$SalesTableTableManager
                 platformId: platformId,
                 soldAt: soldAt,
                 quantity: quantity,
+                unitCostCents: unitCostCents,
                 salePriceCents: salePriceCents,
                 platformFeesCents: platformFeesCents,
                 outboundShippingCents: outboundShippingCents,
                 packagingCents: packagingCents,
                 trackingNumber: trackingNumber,
+                shippedAt: shippedAt,
               ),
           createCompanionCallback:
               ({
@@ -9242,11 +9378,13 @@ class $$SalesTableTableManager
                 Value<int?> platformId = const Value.absent(),
                 required DateTime soldAt,
                 Value<int> quantity = const Value.absent(),
+                Value<int> unitCostCents = const Value.absent(),
                 required int salePriceCents,
                 Value<int> platformFeesCents = const Value.absent(),
                 Value<int> outboundShippingCents = const Value.absent(),
                 Value<int> packagingCents = const Value.absent(),
                 Value<String?> trackingNumber = const Value.absent(),
+                Value<DateTime?> shippedAt = const Value.absent(),
               }) => SalesCompanion.insert(
                 syncId: syncId,
                 createdAt: createdAt,
@@ -9256,11 +9394,13 @@ class $$SalesTableTableManager
                 platformId: platformId,
                 soldAt: soldAt,
                 quantity: quantity,
+                unitCostCents: unitCostCents,
                 salePriceCents: salePriceCents,
                 platformFeesCents: platformFeesCents,
                 outboundShippingCents: outboundShippingCents,
                 packagingCents: packagingCents,
                 trackingNumber: trackingNumber,
+                shippedAt: shippedAt,
               ),
           withReferenceMapper: (p0) => p0
               .map(
