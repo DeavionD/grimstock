@@ -11,6 +11,7 @@ import '../../widgets/money_field.dart';
 import '../../widgets/suggest_field.dart';
 import '../pro/paywall_screen.dart';
 import 'item_status_ui.dart';
+import 'sales_tax_dialog.dart';
 import 'scanner_screen.dart';
 
 /// Costs carried over from the calculator into a new item.
@@ -19,11 +20,17 @@ class ItemPrefill {
     this.purchasePriceCents = 0,
     this.purchaseTaxCents = 0,
     this.inboundShippingCents = 0,
+    this.name,
+    this.brand,
+    this.sku,
   });
 
   final int purchasePriceCents;
   final int purchaseTaxCents;
   final int inboundShippingCents;
+  final String? name;
+  final String? brand;
+  final String? sku;
 }
 
 /// Add a new item ([itemId] null) or edit an existing one.
@@ -72,6 +79,9 @@ class _ItemFormScreenState extends ConsumerState<ItemFormScreen> {
       _price.text = centsText(prefill.purchasePriceCents);
       _tax.text = centsText(prefill.purchaseTaxCents);
       _inbound.text = centsText(prefill.inboundShippingCents);
+      _name.text = prefill.name ?? '';
+      _brand.text = prefill.brand ?? '';
+      _sku.text = prefill.sku ?? '';
     }
   }
 
@@ -143,6 +153,18 @@ class _ItemFormScreenState extends ConsumerState<ItemFormScreen> {
     messenger.showSnackBar(
       SnackBar(content: Text('Filled in from barcode: ${info.title}')),
     );
+  }
+
+  Future<void> _calculateTax() async {
+    final price = centsFrom(_price);
+    if (price <= 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Enter the price paid first')),
+      );
+      return;
+    }
+    final tax = await showSalesTaxDialog(context, ref, priceCents: price);
+    if (tax != null && mounted) setState(() => _tax.text = centsText(tax));
   }
 
   Future<void> _pickDate() async {
@@ -332,7 +354,15 @@ class _ItemFormScreenState extends ConsumerState<ItemFormScreen> {
                   _section('What you paid (per item)'),
                   _row(
                     MoneyField(controller: _price, label: 'Price paid'),
-                    MoneyField(controller: _tax, label: 'Tax'),
+                    MoneyField(
+                      controller: _tax,
+                      label: 'Tax',
+                      suffixIcon: IconButton(
+                        tooltip: 'Work out sales tax',
+                        icon: const Icon(Icons.calculate_outlined),
+                        onPressed: _calculateTax,
+                      ),
+                    ),
                   ),
                   const SizedBox(height: 12),
                   _row(

@@ -11,18 +11,24 @@ class MoneyField extends StatelessWidget {
     required this.label,
     this.required = false,
     this.onChanged,
+    this.suffixIcon,
   });
 
   final TextEditingController controller;
   final String label;
   final bool required;
   final ValueChanged<String>? onChanged;
+  final Widget? suffixIcon;
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
       controller: controller,
-      decoration: InputDecoration(labelText: label, prefixText: r'$ '),
+      decoration: InputDecoration(
+        labelText: label,
+        prefixText: r'$ ',
+        suffixIcon: suffixIcon,
+      ),
       keyboardType: const TextInputType.numberWithOptions(decimal: true),
       inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[0-9.,]'))],
       onChanged: onChanged,

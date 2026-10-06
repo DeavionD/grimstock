@@ -168,7 +168,7 @@ class GrimstockDatabase extends _$GrimstockDatabase {
     : super(executor ?? driftDatabase(name: 'grimstock'));
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -176,10 +176,45 @@ class GrimstockDatabase extends _$GrimstockDatabase {
       await m.createAll();
       await _seedDefaults();
     },
+    onUpgrade: (m, from, to) async {
+      // Version 2 (test builds from 2026-10-06): Appliances category.
+      if (from < 2) {
+        await _addCategory('Appliances', ['Model', 'Serial number']);
+      }
+    },
     beforeOpen: (details) async {
       await customStatement('PRAGMA foreign_keys = ON');
     },
   );
+
+  /// Adds a category with custom fields at the end of the list, unless one
+  /// with that name already exists.
+  Future<void> _addCategory(String name, List<String> fields) async {
+    final existing = await (select(
+      categories,
+    )..where((c) => c.name.equals(name))).getSingleOrNull();
+    if (existing != null) return;
+    final last =
+        await (select(categories)
+              ..orderBy([(c) => OrderingTerm.desc(c.sortOrder)])
+              ..limit(1))
+            .getSingleOrNull();
+    final id = await into(categories).insert(
+      CategoriesCompanion.insert(
+        name: name,
+        sortOrder: Value((last?.sortOrder ?? -1) + 1),
+      ),
+    );
+    for (final (i, label) in fields.indexed) {
+      await into(categoryFields).insert(
+        CategoryFieldsCompanion.insert(
+          categoryId: id,
+          label: label,
+          sortOrder: Value(i),
+        ),
+      );
+    }
+  }
 
   Future<void> _seedDefaults() async {
     const defaultFields = {
@@ -187,6 +222,7 @@ class GrimstockDatabase extends _$GrimstockDatabase {
       'Streetwear': ['Colorway'],
       'Trading Cards': ['Set', 'Grade'],
       'Electronics': ['Model', 'Serial number'],
+      'Appliances': ['Model', 'Serial number'],
       'Collectibles': [],
       'Other': [],
     };

@@ -39,11 +39,11 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Grimstock Pro'), findsOneWidget);
     await tester.scrollUntilVisible(
-      find.text(r'$34.99 / year'),
+      find.text('Try Pro (test build)'),
       300,
       scrollable: find.byType(Scrollable).first,
     );
-    expect(find.text('Try Pro (test build)'), findsOneWidget);
+    expect(find.text(r'$34.99 / year'), findsOneWidget);
     await unmount(tester);
   });
 

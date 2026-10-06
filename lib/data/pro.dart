@@ -30,8 +30,9 @@ enum ProFeature {
     'Inventory, sales, expenses and a profit and loss summary.',
   ),
   barcodeLookup(
-    'Barcode autofill',
-    'Scan a box and fill in the name and brand.',
+    'Barcode scan and deal check',
+    'Scan a box to fill in the item and get a green, yellow or red buy '
+        'check with its ROI.',
   ),
   customPlatforms(
     'Custom platforms',

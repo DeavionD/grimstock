@@ -12,6 +12,7 @@ abstract final class GrimColors {
   static const ecto = Color(0xFF8FD14F); // accent, profit
   static const blood = Color(0xFFE5484D); // loss, destructive
   static const hex = Color(0xFF9B7BD4); // secondary accent (crypt purple)
+  static const pyre = Color(0xFFE8B04B); // caution
 }
 
 ThemeData buildGrimTheme() {
