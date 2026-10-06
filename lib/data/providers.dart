@@ -1,10 +1,15 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:http/http.dart' as http;
 
 import 'database.dart';
+import 'expense_repository.dart';
+import 'export.dart';
 import 'item_repository.dart';
 import 'photo_store.dart';
+import 'pro.dart';
 import 'insights.dart';
 import 'sales_repository.dart';
+import 'upc_lookup.dart';
 
 /// The app's single local database. Overridden in tests with an in-memory one.
 final databaseProvider = Provider<GrimstockDatabase>((ref) {
@@ -26,14 +31,28 @@ final categoriesProvider = StreamProvider<List<Category>>(
 );
 
 /// Free plan limit on items that aren't sold yet.
-const freeActiveItemLimit = 25;
+const freeActiveItemLimit = FreeLimits.activeItems;
 
-final itemRepositoryProvider = Provider<ItemRepository>(
-  (ref) => ItemRepository(
-    ref.watch(databaseProvider),
-    activeItemLimit: freeActiveItemLimit,
-  ),
+/// Whether Pro is unlocked. A stand-in switch in Settings drives it until
+/// store purchases are connected; then this reads the store entitlement.
+final isProProvider = Provider<bool>(
+  (ref) => ref.watch(_devProProvider).value == 'true',
 );
+
+final _devProProvider = StreamProvider<String?>(
+  (ref) => ref.watch(databaseProvider).watchSetting(devProSettingKey),
+);
+
+final itemRepositoryProvider = Provider<ItemRepository>((ref) {
+  final pro = ref.watch(isProProvider);
+  return ItemRepository(
+    ref.watch(databaseProvider),
+    activeItemLimit: pro ? null : FreeLimits.activeItems,
+    photoLimit: pro
+        ? ItemRepository.maxPhotosPerItem
+        : FreeLimits.photosPerItem,
+  );
+});
 
 final moneyInStockProvider = StreamProvider<int>(
   (ref) => ref.watch(itemRepositoryProvider).watchMoneyInStock(),
@@ -123,3 +142,40 @@ final agingStockProvider = StreamProvider<AgingStock>(
         ),
       ),
 );
+
+final expenseRepositoryProvider = Provider<ExpenseRepository>(
+  (ref) => ExpenseRepository(ref.watch(databaseProvider)),
+);
+
+final mileageRateProvider = StreamProvider<double>(
+  (ref) => ref.watch(expenseRepositoryProvider).watchMileageRate(),
+);
+
+final expensesProvider = StreamProvider<List<Expense>>(
+  (ref) => ref.watch(expenseRepositoryProvider).watchExpenses(),
+);
+
+final expenseProvider = StreamProvider.family<Expense?, int>(
+  (ref, id) => ref.watch(expenseRepositoryProvider).watchExpense(id),
+);
+
+/// Expenses from the start of [Period] until now.
+final periodExpensesProvider = StreamProvider.family<int, Period>(
+  (ref, period) => ref
+      .watch(expenseRepositoryProvider)
+      .watchTotal(from: period.start(DateTime.now())),
+);
+
+final exporterProvider = Provider<Exporter>(
+  (ref) => Exporter(
+    ref.watch(databaseProvider),
+    ref.watch(salesRepositoryProvider),
+    ref.watch(expenseRepositoryProvider),
+  ),
+);
+
+final upcLookupProvider = Provider<UpcLookup>((ref) {
+  final client = http.Client();
+  ref.onDispose(client.close);
+  return UpcLookup(client);
+});

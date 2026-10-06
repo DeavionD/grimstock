@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/item_repository.dart';
 import '../../data/providers.dart';
 import '../../theme/grim_theme.dart';
+import '../pro/paywall_screen.dart';
 
 /// A row of an item's photos with buttons to add (camera or library) and
 /// long-press to remove.
@@ -71,7 +72,9 @@ class PhotoStrip extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final photos = ref.watch(itemPhotosProvider(itemId)).value ?? const [];
-    final canAdd = photos.length < ItemRepository.maxPhotosPerItem;
+    final limit = ref.watch(itemRepositoryProvider).photoLimit;
+    final canAdd = photos.length < limit;
+    final canUpgrade = !canAdd && limit < ItemRepository.maxPhotosPerItem;
 
     return SizedBox(
       height: 96,
@@ -104,6 +107,15 @@ class PhotoStrip extends ConsumerWidget {
               child: const _PhotoPlaceholder(
                 icon: Icons.add_a_photo_outlined,
                 label: 'Add photo',
+              ),
+            ),
+          if (canUpgrade)
+            InkWell(
+              borderRadius: BorderRadius.circular(12),
+              onTap: () => showPaywall(context),
+              child: const _PhotoPlaceholder(
+                icon: Icons.lock_outline,
+                label: 'More with Pro',
               ),
             ),
         ],
