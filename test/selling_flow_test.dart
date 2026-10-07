@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:grimstock/data/database.dart';
 import 'package:grimstock/data/item_repository.dart';
+import 'package:grimstock/data/pro.dart';
 import 'package:grimstock/data/providers.dart';
 import 'package:grimstock/data/sales_repository.dart';
 import 'package:grimstock/main.dart';
@@ -138,6 +139,8 @@ void main() {
     // Local / Cash has no fees, so it ranks first at $100 profit.
     expect(find.text('Best'), findsOneWidget);
     expect(find.text(r'$100.00'), findsWidgets);
+    // The deal check is Pro.
+    expect(find.text('Deal check'), findsOneWidget);
 
     await tester.scrollUntilVisible(
       find.text('Bought it? Add to inventory'),
@@ -147,6 +150,41 @@ void main() {
     await tester.tap(find.text('Bought it? Add to inventory'));
     await tester.pumpAndSettle();
     expect(find.widgetWithText(TextFormField, '200.00'), findsOneWidget);
+
+    await unmount(tester);
+  });
+
+  testWidgets('Pro deal check and what to list for', (tester) async {
+    await startApp(tester, seed: () => db.setSetting(devProSettingKey, 'true'));
+    await tester.tap(tab('Calculator'));
+    await tester.pumpAndSettle();
+
+    await tester.enterText(
+      find.widgetWithText(TextFormField, 'Buy price'),
+      '200',
+    );
+    await tester.enterText(
+      find.widgetWithText(TextFormField, 'Expected sale price'),
+      '300',
+    );
+    await tester.pumpAndSettle();
+    // $100 profit on $200 is a 50% return.
+    expect(find.text('Looks like a good buy'), findsOneWidget);
+
+    await tester.enterText(
+      find.widgetWithText(TextFormField, 'Expected sale price'),
+      '210',
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('Not worth it'), findsOneWidget);
+
+    await tester.tap(find.text('What to list for'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(const Key('target')), '50');
+    await tester.pumpAndSettle();
+    // No fees on Facebook Marketplace or Local / Cash: $200 + $50.
+    expect(find.text('List it for'), findsOneWidget);
+    expect(find.text(r'$250.00'), findsNWidgets(2));
 
     await unmount(tester);
   });

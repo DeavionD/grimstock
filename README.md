@@ -43,6 +43,13 @@ Built with Flutter for iOS and Android. The product plan lives in the project's 
 - CSV export of inventory, sales and expenses, plus a profit and loss summary for a tax year (`lib/data/export.dart`)
 - Barcode autofill: scanning a UPC fills in the name and brand from UPCitemdb's free trial (100 lookups a day; needs a paid key before launch)
 
+## Tester feedback (round 1)
+
+- Appliances category with Model and Serial number fields. Existing installs get it through a database migration (schema version 2)
+- Sales tax by state on the item form: the calculator icon on the Tax field picks a state (Tax Foundation 2026 average combined rates, editable) and works out the tax (`lib/data/sales_tax.dart`)
+- Calculator "What to list for": enter what you paid and the profit or ROI you want, and see the lowest list price on every platform after fees (`listPriceFor` in `lib/data/deal_check.dart`)
+- Pro deal check: scan a barcode in the Calculator to look up the product, then get a green (good buy), yellow (buy at your own risk) or red (not worth it) check from the ROI and how fast you've sold that item before. It uses your own Sold archive for now; market-wide sold prices need a paid data source later
+
 ## Test APK
 
 Every push to `main` and every pull request builds an Android APK with the Pro test switch (`.github/workflows/test-apk.yml`). Download `grimstock-test-apk` from the workflow run's Artifacts, unzip it, and install `app-release.apk` on an Android phone (allow installs from your browser or files app when asked).
