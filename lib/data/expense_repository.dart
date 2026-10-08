@@ -85,8 +85,17 @@ class ExpenseRepository {
     return draft.id!;
   }
 
-  Future<void> delete(int id) =>
-      (db.delete(db.expenses)..where((e) => e.id.equals(id))).go();
+  /// Deletes an expense. A receipt saved as this expense stays, kept as a
+  /// stock receipt.
+  Future<void> delete(int id) => db.transaction(() async {
+    await (db.update(db.receipts)..where((r) => r.expenseId.equals(id))).write(
+      const ReceiptsCompanion(
+        expenseId: Value(null),
+        purpose: Value('inventory'),
+      ),
+    );
+    await (db.delete(db.expenses)..where((e) => e.id.equals(id))).go();
+  });
 
   Stream<Expense?> watchExpense(int id) => (db.select(
     db.expenses,

@@ -7,6 +7,7 @@ import 'package:grimstock/data/export.dart';
 import 'package:grimstock/data/item_repository.dart';
 import 'package:grimstock/data/pro.dart';
 import 'package:grimstock/data/providers.dart';
+import 'package:grimstock/data/receipt_repository.dart';
 import 'package:grimstock/data/sales_repository.dart';
 import 'package:grimstock/data/upc_lookup.dart';
 import 'package:http/http.dart' as http;
@@ -129,7 +130,12 @@ void main() {
       final items = ItemRepository(db);
       final sales = SalesRepository(db, items);
       final expenses = ExpenseRepository(db);
-      final exporter = Exporter(db, sales, expenses);
+      final exporter = Exporter(
+        db,
+        sales,
+        expenses,
+        ReceiptRepository(db, expenses),
+      );
 
       final id = await items.saveItem(
         const ItemDraft(

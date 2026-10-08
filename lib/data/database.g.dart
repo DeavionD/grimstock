@@ -5653,6 +5653,1315 @@ class ExpensesCompanion extends UpdateCompanion<Expense> {
   }
 }
 
+class $ReceiptsTable extends Receipts with TableInfo<$ReceiptsTable, Receipt> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ReceiptsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _syncIdMeta = const VerificationMeta('syncId');
+  @override
+  late final GeneratedColumn<String> syncId = GeneratedColumn<String>(
+    'sync_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways('UNIQUE'),
+    clientDefault: newSyncId,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _storeMeta = const VerificationMeta('store');
+  @override
+  late final GeneratedColumn<String> store = GeneratedColumn<String>(
+    'store',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _purchasedAtMeta = const VerificationMeta(
+    'purchasedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> purchasedAt = GeneratedColumn<DateTime>(
+    'purchased_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _purposeMeta = const VerificationMeta(
+    'purpose',
+  );
+  @override
+  late final GeneratedColumn<String> purpose = GeneratedColumn<String>(
+    'purpose',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('inventory'),
+  );
+  static const VerificationMeta _subtotalCentsMeta = const VerificationMeta(
+    'subtotalCents',
+  );
+  @override
+  late final GeneratedColumn<int> subtotalCents = GeneratedColumn<int>(
+    'subtotal_cents',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _taxCentsMeta = const VerificationMeta(
+    'taxCents',
+  );
+  @override
+  late final GeneratedColumn<int> taxCents = GeneratedColumn<int>(
+    'tax_cents',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _totalCentsMeta = const VerificationMeta(
+    'totalCents',
+  );
+  @override
+  late final GeneratedColumn<int> totalCents = GeneratedColumn<int>(
+    'total_cents',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _photoPathMeta = const VerificationMeta(
+    'photoPath',
+  );
+  @override
+  late final GeneratedColumn<String> photoPath = GeneratedColumn<String>(
+    'photo_path',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _scannedTextMeta = const VerificationMeta(
+    'scannedText',
+  );
+  @override
+  late final GeneratedColumn<String> scannedText = GeneratedColumn<String>(
+    'scanned_text',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _notesMeta = const VerificationMeta('notes');
+  @override
+  late final GeneratedColumn<String> notes = GeneratedColumn<String>(
+    'notes',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _expenseIdMeta = const VerificationMeta(
+    'expenseId',
+  );
+  @override
+  late final GeneratedColumn<int> expenseId = GeneratedColumn<int>(
+    'expense_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES expenses (id)',
+    ),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    syncId,
+    createdAt,
+    updatedAt,
+    id,
+    store,
+    purchasedAt,
+    purpose,
+    subtotalCents,
+    taxCents,
+    totalCents,
+    photoPath,
+    scannedText,
+    notes,
+    expenseId,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'receipts';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<Receipt> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('sync_id')) {
+      context.handle(
+        _syncIdMeta,
+        syncId.isAcceptableOrUnknown(data['sync_id']!, _syncIdMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    }
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('store')) {
+      context.handle(
+        _storeMeta,
+        store.isAcceptableOrUnknown(data['store']!, _storeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_storeMeta);
+    }
+    if (data.containsKey('purchased_at')) {
+      context.handle(
+        _purchasedAtMeta,
+        purchasedAt.isAcceptableOrUnknown(
+          data['purchased_at']!,
+          _purchasedAtMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_purchasedAtMeta);
+    }
+    if (data.containsKey('purpose')) {
+      context.handle(
+        _purposeMeta,
+        purpose.isAcceptableOrUnknown(data['purpose']!, _purposeMeta),
+      );
+    }
+    if (data.containsKey('subtotal_cents')) {
+      context.handle(
+        _subtotalCentsMeta,
+        subtotalCents.isAcceptableOrUnknown(
+          data['subtotal_cents']!,
+          _subtotalCentsMeta,
+        ),
+      );
+    }
+    if (data.containsKey('tax_cents')) {
+      context.handle(
+        _taxCentsMeta,
+        taxCents.isAcceptableOrUnknown(data['tax_cents']!, _taxCentsMeta),
+      );
+    }
+    if (data.containsKey('total_cents')) {
+      context.handle(
+        _totalCentsMeta,
+        totalCents.isAcceptableOrUnknown(data['total_cents']!, _totalCentsMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_totalCentsMeta);
+    }
+    if (data.containsKey('photo_path')) {
+      context.handle(
+        _photoPathMeta,
+        photoPath.isAcceptableOrUnknown(data['photo_path']!, _photoPathMeta),
+      );
+    }
+    if (data.containsKey('scanned_text')) {
+      context.handle(
+        _scannedTextMeta,
+        scannedText.isAcceptableOrUnknown(
+          data['scanned_text']!,
+          _scannedTextMeta,
+        ),
+      );
+    }
+    if (data.containsKey('notes')) {
+      context.handle(
+        _notesMeta,
+        notes.isAcceptableOrUnknown(data['notes']!, _notesMeta),
+      );
+    }
+    if (data.containsKey('expense_id')) {
+      context.handle(
+        _expenseIdMeta,
+        expenseId.isAcceptableOrUnknown(data['expense_id']!, _expenseIdMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  Receipt map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Receipt(
+      syncId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}sync_id'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      store: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}store'],
+      )!,
+      purchasedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}purchased_at'],
+      )!,
+      purpose: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}purpose'],
+      )!,
+      subtotalCents: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}subtotal_cents'],
+      ),
+      taxCents: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}tax_cents'],
+      )!,
+      totalCents: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}total_cents'],
+      )!,
+      photoPath: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}photo_path'],
+      ),
+      scannedText: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}scanned_text'],
+      ),
+      notes: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}notes'],
+      ),
+      expenseId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}expense_id'],
+      ),
+    );
+  }
+
+  @override
+  $ReceiptsTable createAlias(String alias) {
+    return $ReceiptsTable(attachedDatabase, alias);
+  }
+}
+
+class Receipt extends DataClass implements Insertable<Receipt> {
+  final String syncId;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  final int id;
+  final String store;
+  final DateTime purchasedAt;
+  final String purpose;
+  final int? subtotalCents;
+  final int taxCents;
+  final int totalCents;
+  final String? photoPath;
+
+  /// Everything read off the photo, kept in case the parsing missed something.
+  final String? scannedText;
+  final String? notes;
+  final int? expenseId;
+  const Receipt({
+    required this.syncId,
+    required this.createdAt,
+    required this.updatedAt,
+    required this.id,
+    required this.store,
+    required this.purchasedAt,
+    required this.purpose,
+    this.subtotalCents,
+    required this.taxCents,
+    required this.totalCents,
+    this.photoPath,
+    this.scannedText,
+    this.notes,
+    this.expenseId,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['sync_id'] = Variable<String>(syncId);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    map['id'] = Variable<int>(id);
+    map['store'] = Variable<String>(store);
+    map['purchased_at'] = Variable<DateTime>(purchasedAt);
+    map['purpose'] = Variable<String>(purpose);
+    if (!nullToAbsent || subtotalCents != null) {
+      map['subtotal_cents'] = Variable<int>(subtotalCents);
+    }
+    map['tax_cents'] = Variable<int>(taxCents);
+    map['total_cents'] = Variable<int>(totalCents);
+    if (!nullToAbsent || photoPath != null) {
+      map['photo_path'] = Variable<String>(photoPath);
+    }
+    if (!nullToAbsent || scannedText != null) {
+      map['scanned_text'] = Variable<String>(scannedText);
+    }
+    if (!nullToAbsent || notes != null) {
+      map['notes'] = Variable<String>(notes);
+    }
+    if (!nullToAbsent || expenseId != null) {
+      map['expense_id'] = Variable<int>(expenseId);
+    }
+    return map;
+  }
+
+  ReceiptsCompanion toCompanion(bool nullToAbsent) {
+    return ReceiptsCompanion(
+      syncId: Value(syncId),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+      id: Value(id),
+      store: Value(store),
+      purchasedAt: Value(purchasedAt),
+      purpose: Value(purpose),
+      subtotalCents: subtotalCents == null && nullToAbsent
+          ? const Value.absent()
+          : Value(subtotalCents),
+      taxCents: Value(taxCents),
+      totalCents: Value(totalCents),
+      photoPath: photoPath == null && nullToAbsent
+          ? const Value.absent()
+          : Value(photoPath),
+      scannedText: scannedText == null && nullToAbsent
+          ? const Value.absent()
+          : Value(scannedText),
+      notes: notes == null && nullToAbsent
+          ? const Value.absent()
+          : Value(notes),
+      expenseId: expenseId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(expenseId),
+    );
+  }
+
+  factory Receipt.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return Receipt(
+      syncId: serializer.fromJson<String>(json['syncId']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+      id: serializer.fromJson<int>(json['id']),
+      store: serializer.fromJson<String>(json['store']),
+      purchasedAt: serializer.fromJson<DateTime>(json['purchasedAt']),
+      purpose: serializer.fromJson<String>(json['purpose']),
+      subtotalCents: serializer.fromJson<int?>(json['subtotalCents']),
+      taxCents: serializer.fromJson<int>(json['taxCents']),
+      totalCents: serializer.fromJson<int>(json['totalCents']),
+      photoPath: serializer.fromJson<String?>(json['photoPath']),
+      scannedText: serializer.fromJson<String?>(json['scannedText']),
+      notes: serializer.fromJson<String?>(json['notes']),
+      expenseId: serializer.fromJson<int?>(json['expenseId']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'syncId': serializer.toJson<String>(syncId),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+      'id': serializer.toJson<int>(id),
+      'store': serializer.toJson<String>(store),
+      'purchasedAt': serializer.toJson<DateTime>(purchasedAt),
+      'purpose': serializer.toJson<String>(purpose),
+      'subtotalCents': serializer.toJson<int?>(subtotalCents),
+      'taxCents': serializer.toJson<int>(taxCents),
+      'totalCents': serializer.toJson<int>(totalCents),
+      'photoPath': serializer.toJson<String?>(photoPath),
+      'scannedText': serializer.toJson<String?>(scannedText),
+      'notes': serializer.toJson<String?>(notes),
+      'expenseId': serializer.toJson<int?>(expenseId),
+    };
+  }
+
+  Receipt copyWith({
+    String? syncId,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    int? id,
+    String? store,
+    DateTime? purchasedAt,
+    String? purpose,
+    Value<int?> subtotalCents = const Value.absent(),
+    int? taxCents,
+    int? totalCents,
+    Value<String?> photoPath = const Value.absent(),
+    Value<String?> scannedText = const Value.absent(),
+    Value<String?> notes = const Value.absent(),
+    Value<int?> expenseId = const Value.absent(),
+  }) => Receipt(
+    syncId: syncId ?? this.syncId,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+    id: id ?? this.id,
+    store: store ?? this.store,
+    purchasedAt: purchasedAt ?? this.purchasedAt,
+    purpose: purpose ?? this.purpose,
+    subtotalCents: subtotalCents.present
+        ? subtotalCents.value
+        : this.subtotalCents,
+    taxCents: taxCents ?? this.taxCents,
+    totalCents: totalCents ?? this.totalCents,
+    photoPath: photoPath.present ? photoPath.value : this.photoPath,
+    scannedText: scannedText.present ? scannedText.value : this.scannedText,
+    notes: notes.present ? notes.value : this.notes,
+    expenseId: expenseId.present ? expenseId.value : this.expenseId,
+  );
+  Receipt copyWithCompanion(ReceiptsCompanion data) {
+    return Receipt(
+      syncId: data.syncId.present ? data.syncId.value : this.syncId,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      id: data.id.present ? data.id.value : this.id,
+      store: data.store.present ? data.store.value : this.store,
+      purchasedAt: data.purchasedAt.present
+          ? data.purchasedAt.value
+          : this.purchasedAt,
+      purpose: data.purpose.present ? data.purpose.value : this.purpose,
+      subtotalCents: data.subtotalCents.present
+          ? data.subtotalCents.value
+          : this.subtotalCents,
+      taxCents: data.taxCents.present ? data.taxCents.value : this.taxCents,
+      totalCents: data.totalCents.present
+          ? data.totalCents.value
+          : this.totalCents,
+      photoPath: data.photoPath.present ? data.photoPath.value : this.photoPath,
+      scannedText: data.scannedText.present
+          ? data.scannedText.value
+          : this.scannedText,
+      notes: data.notes.present ? data.notes.value : this.notes,
+      expenseId: data.expenseId.present ? data.expenseId.value : this.expenseId,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('Receipt(')
+          ..write('syncId: $syncId, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('id: $id, ')
+          ..write('store: $store, ')
+          ..write('purchasedAt: $purchasedAt, ')
+          ..write('purpose: $purpose, ')
+          ..write('subtotalCents: $subtotalCents, ')
+          ..write('taxCents: $taxCents, ')
+          ..write('totalCents: $totalCents, ')
+          ..write('photoPath: $photoPath, ')
+          ..write('scannedText: $scannedText, ')
+          ..write('notes: $notes, ')
+          ..write('expenseId: $expenseId')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    syncId,
+    createdAt,
+    updatedAt,
+    id,
+    store,
+    purchasedAt,
+    purpose,
+    subtotalCents,
+    taxCents,
+    totalCents,
+    photoPath,
+    scannedText,
+    notes,
+    expenseId,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Receipt &&
+          other.syncId == this.syncId &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt &&
+          other.id == this.id &&
+          other.store == this.store &&
+          other.purchasedAt == this.purchasedAt &&
+          other.purpose == this.purpose &&
+          other.subtotalCents == this.subtotalCents &&
+          other.taxCents == this.taxCents &&
+          other.totalCents == this.totalCents &&
+          other.photoPath == this.photoPath &&
+          other.scannedText == this.scannedText &&
+          other.notes == this.notes &&
+          other.expenseId == this.expenseId);
+}
+
+class ReceiptsCompanion extends UpdateCompanion<Receipt> {
+  final Value<String> syncId;
+  final Value<DateTime> createdAt;
+  final Value<DateTime> updatedAt;
+  final Value<int> id;
+  final Value<String> store;
+  final Value<DateTime> purchasedAt;
+  final Value<String> purpose;
+  final Value<int?> subtotalCents;
+  final Value<int> taxCents;
+  final Value<int> totalCents;
+  final Value<String?> photoPath;
+  final Value<String?> scannedText;
+  final Value<String?> notes;
+  final Value<int?> expenseId;
+  const ReceiptsCompanion({
+    this.syncId = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.id = const Value.absent(),
+    this.store = const Value.absent(),
+    this.purchasedAt = const Value.absent(),
+    this.purpose = const Value.absent(),
+    this.subtotalCents = const Value.absent(),
+    this.taxCents = const Value.absent(),
+    this.totalCents = const Value.absent(),
+    this.photoPath = const Value.absent(),
+    this.scannedText = const Value.absent(),
+    this.notes = const Value.absent(),
+    this.expenseId = const Value.absent(),
+  });
+  ReceiptsCompanion.insert({
+    this.syncId = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.id = const Value.absent(),
+    required String store,
+    required DateTime purchasedAt,
+    this.purpose = const Value.absent(),
+    this.subtotalCents = const Value.absent(),
+    this.taxCents = const Value.absent(),
+    required int totalCents,
+    this.photoPath = const Value.absent(),
+    this.scannedText = const Value.absent(),
+    this.notes = const Value.absent(),
+    this.expenseId = const Value.absent(),
+  }) : store = Value(store),
+       purchasedAt = Value(purchasedAt),
+       totalCents = Value(totalCents);
+  static Insertable<Receipt> custom({
+    Expression<String>? syncId,
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? updatedAt,
+    Expression<int>? id,
+    Expression<String>? store,
+    Expression<DateTime>? purchasedAt,
+    Expression<String>? purpose,
+    Expression<int>? subtotalCents,
+    Expression<int>? taxCents,
+    Expression<int>? totalCents,
+    Expression<String>? photoPath,
+    Expression<String>? scannedText,
+    Expression<String>? notes,
+    Expression<int>? expenseId,
+  }) {
+    return RawValuesInsertable({
+      if (syncId != null) 'sync_id': syncId,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (id != null) 'id': id,
+      if (store != null) 'store': store,
+      if (purchasedAt != null) 'purchased_at': purchasedAt,
+      if (purpose != null) 'purpose': purpose,
+      if (subtotalCents != null) 'subtotal_cents': subtotalCents,
+      if (taxCents != null) 'tax_cents': taxCents,
+      if (totalCents != null) 'total_cents': totalCents,
+      if (photoPath != null) 'photo_path': photoPath,
+      if (scannedText != null) 'scanned_text': scannedText,
+      if (notes != null) 'notes': notes,
+      if (expenseId != null) 'expense_id': expenseId,
+    });
+  }
+
+  ReceiptsCompanion copyWith({
+    Value<String>? syncId,
+    Value<DateTime>? createdAt,
+    Value<DateTime>? updatedAt,
+    Value<int>? id,
+    Value<String>? store,
+    Value<DateTime>? purchasedAt,
+    Value<String>? purpose,
+    Value<int?>? subtotalCents,
+    Value<int>? taxCents,
+    Value<int>? totalCents,
+    Value<String?>? photoPath,
+    Value<String?>? scannedText,
+    Value<String?>? notes,
+    Value<int?>? expenseId,
+  }) {
+    return ReceiptsCompanion(
+      syncId: syncId ?? this.syncId,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      id: id ?? this.id,
+      store: store ?? this.store,
+      purchasedAt: purchasedAt ?? this.purchasedAt,
+      purpose: purpose ?? this.purpose,
+      subtotalCents: subtotalCents ?? this.subtotalCents,
+      taxCents: taxCents ?? this.taxCents,
+      totalCents: totalCents ?? this.totalCents,
+      photoPath: photoPath ?? this.photoPath,
+      scannedText: scannedText ?? this.scannedText,
+      notes: notes ?? this.notes,
+      expenseId: expenseId ?? this.expenseId,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (syncId.present) {
+      map['sync_id'] = Variable<String>(syncId.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (store.present) {
+      map['store'] = Variable<String>(store.value);
+    }
+    if (purchasedAt.present) {
+      map['purchased_at'] = Variable<DateTime>(purchasedAt.value);
+    }
+    if (purpose.present) {
+      map['purpose'] = Variable<String>(purpose.value);
+    }
+    if (subtotalCents.present) {
+      map['subtotal_cents'] = Variable<int>(subtotalCents.value);
+    }
+    if (taxCents.present) {
+      map['tax_cents'] = Variable<int>(taxCents.value);
+    }
+    if (totalCents.present) {
+      map['total_cents'] = Variable<int>(totalCents.value);
+    }
+    if (photoPath.present) {
+      map['photo_path'] = Variable<String>(photoPath.value);
+    }
+    if (scannedText.present) {
+      map['scanned_text'] = Variable<String>(scannedText.value);
+    }
+    if (notes.present) {
+      map['notes'] = Variable<String>(notes.value);
+    }
+    if (expenseId.present) {
+      map['expense_id'] = Variable<int>(expenseId.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ReceiptsCompanion(')
+          ..write('syncId: $syncId, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('id: $id, ')
+          ..write('store: $store, ')
+          ..write('purchasedAt: $purchasedAt, ')
+          ..write('purpose: $purpose, ')
+          ..write('subtotalCents: $subtotalCents, ')
+          ..write('taxCents: $taxCents, ')
+          ..write('totalCents: $totalCents, ')
+          ..write('photoPath: $photoPath, ')
+          ..write('scannedText: $scannedText, ')
+          ..write('notes: $notes, ')
+          ..write('expenseId: $expenseId')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $ReceiptLinesTable extends ReceiptLines
+    with TableInfo<$ReceiptLinesTable, ReceiptLine> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ReceiptLinesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _syncIdMeta = const VerificationMeta('syncId');
+  @override
+  late final GeneratedColumn<String> syncId = GeneratedColumn<String>(
+    'sync_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways('UNIQUE'),
+    clientDefault: newSyncId,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _receiptIdMeta = const VerificationMeta(
+    'receiptId',
+  );
+  @override
+  late final GeneratedColumn<int> receiptId = GeneratedColumn<int>(
+    'receipt_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES receipts (id)',
+    ),
+  );
+  static const VerificationMeta _descriptionMeta = const VerificationMeta(
+    'description',
+  );
+  @override
+  late final GeneratedColumn<String> description = GeneratedColumn<String>(
+    'description',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _amountCentsMeta = const VerificationMeta(
+    'amountCents',
+  );
+  @override
+  late final GeneratedColumn<int> amountCents = GeneratedColumn<int>(
+    'amount_cents',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _sortOrderMeta = const VerificationMeta(
+    'sortOrder',
+  );
+  @override
+  late final GeneratedColumn<int> sortOrder = GeneratedColumn<int>(
+    'sort_order',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    syncId,
+    createdAt,
+    updatedAt,
+    id,
+    receiptId,
+    description,
+    amountCents,
+    sortOrder,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'receipt_lines';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<ReceiptLine> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('sync_id')) {
+      context.handle(
+        _syncIdMeta,
+        syncId.isAcceptableOrUnknown(data['sync_id']!, _syncIdMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    }
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('receipt_id')) {
+      context.handle(
+        _receiptIdMeta,
+        receiptId.isAcceptableOrUnknown(data['receipt_id']!, _receiptIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_receiptIdMeta);
+    }
+    if (data.containsKey('description')) {
+      context.handle(
+        _descriptionMeta,
+        description.isAcceptableOrUnknown(
+          data['description']!,
+          _descriptionMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_descriptionMeta);
+    }
+    if (data.containsKey('amount_cents')) {
+      context.handle(
+        _amountCentsMeta,
+        amountCents.isAcceptableOrUnknown(
+          data['amount_cents']!,
+          _amountCentsMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_amountCentsMeta);
+    }
+    if (data.containsKey('sort_order')) {
+      context.handle(
+        _sortOrderMeta,
+        sortOrder.isAcceptableOrUnknown(data['sort_order']!, _sortOrderMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  ReceiptLine map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ReceiptLine(
+      syncId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}sync_id'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      receiptId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}receipt_id'],
+      )!,
+      description: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}description'],
+      )!,
+      amountCents: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}amount_cents'],
+      )!,
+      sortOrder: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}sort_order'],
+      )!,
+    );
+  }
+
+  @override
+  $ReceiptLinesTable createAlias(String alias) {
+    return $ReceiptLinesTable(attachedDatabase, alias);
+  }
+}
+
+class ReceiptLine extends DataClass implements Insertable<ReceiptLine> {
+  final String syncId;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  final int id;
+  final int receiptId;
+  final String description;
+  final int amountCents;
+  final int sortOrder;
+  const ReceiptLine({
+    required this.syncId,
+    required this.createdAt,
+    required this.updatedAt,
+    required this.id,
+    required this.receiptId,
+    required this.description,
+    required this.amountCents,
+    required this.sortOrder,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['sync_id'] = Variable<String>(syncId);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    map['id'] = Variable<int>(id);
+    map['receipt_id'] = Variable<int>(receiptId);
+    map['description'] = Variable<String>(description);
+    map['amount_cents'] = Variable<int>(amountCents);
+    map['sort_order'] = Variable<int>(sortOrder);
+    return map;
+  }
+
+  ReceiptLinesCompanion toCompanion(bool nullToAbsent) {
+    return ReceiptLinesCompanion(
+      syncId: Value(syncId),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+      id: Value(id),
+      receiptId: Value(receiptId),
+      description: Value(description),
+      amountCents: Value(amountCents),
+      sortOrder: Value(sortOrder),
+    );
+  }
+
+  factory ReceiptLine.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ReceiptLine(
+      syncId: serializer.fromJson<String>(json['syncId']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+      id: serializer.fromJson<int>(json['id']),
+      receiptId: serializer.fromJson<int>(json['receiptId']),
+      description: serializer.fromJson<String>(json['description']),
+      amountCents: serializer.fromJson<int>(json['amountCents']),
+      sortOrder: serializer.fromJson<int>(json['sortOrder']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'syncId': serializer.toJson<String>(syncId),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+      'id': serializer.toJson<int>(id),
+      'receiptId': serializer.toJson<int>(receiptId),
+      'description': serializer.toJson<String>(description),
+      'amountCents': serializer.toJson<int>(amountCents),
+      'sortOrder': serializer.toJson<int>(sortOrder),
+    };
+  }
+
+  ReceiptLine copyWith({
+    String? syncId,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    int? id,
+    int? receiptId,
+    String? description,
+    int? amountCents,
+    int? sortOrder,
+  }) => ReceiptLine(
+    syncId: syncId ?? this.syncId,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+    id: id ?? this.id,
+    receiptId: receiptId ?? this.receiptId,
+    description: description ?? this.description,
+    amountCents: amountCents ?? this.amountCents,
+    sortOrder: sortOrder ?? this.sortOrder,
+  );
+  ReceiptLine copyWithCompanion(ReceiptLinesCompanion data) {
+    return ReceiptLine(
+      syncId: data.syncId.present ? data.syncId.value : this.syncId,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      id: data.id.present ? data.id.value : this.id,
+      receiptId: data.receiptId.present ? data.receiptId.value : this.receiptId,
+      description: data.description.present
+          ? data.description.value
+          : this.description,
+      amountCents: data.amountCents.present
+          ? data.amountCents.value
+          : this.amountCents,
+      sortOrder: data.sortOrder.present ? data.sortOrder.value : this.sortOrder,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ReceiptLine(')
+          ..write('syncId: $syncId, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('id: $id, ')
+          ..write('receiptId: $receiptId, ')
+          ..write('description: $description, ')
+          ..write('amountCents: $amountCents, ')
+          ..write('sortOrder: $sortOrder')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    syncId,
+    createdAt,
+    updatedAt,
+    id,
+    receiptId,
+    description,
+    amountCents,
+    sortOrder,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ReceiptLine &&
+          other.syncId == this.syncId &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt &&
+          other.id == this.id &&
+          other.receiptId == this.receiptId &&
+          other.description == this.description &&
+          other.amountCents == this.amountCents &&
+          other.sortOrder == this.sortOrder);
+}
+
+class ReceiptLinesCompanion extends UpdateCompanion<ReceiptLine> {
+  final Value<String> syncId;
+  final Value<DateTime> createdAt;
+  final Value<DateTime> updatedAt;
+  final Value<int> id;
+  final Value<int> receiptId;
+  final Value<String> description;
+  final Value<int> amountCents;
+  final Value<int> sortOrder;
+  const ReceiptLinesCompanion({
+    this.syncId = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.id = const Value.absent(),
+    this.receiptId = const Value.absent(),
+    this.description = const Value.absent(),
+    this.amountCents = const Value.absent(),
+    this.sortOrder = const Value.absent(),
+  });
+  ReceiptLinesCompanion.insert({
+    this.syncId = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.id = const Value.absent(),
+    required int receiptId,
+    required String description,
+    required int amountCents,
+    this.sortOrder = const Value.absent(),
+  }) : receiptId = Value(receiptId),
+       description = Value(description),
+       amountCents = Value(amountCents);
+  static Insertable<ReceiptLine> custom({
+    Expression<String>? syncId,
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? updatedAt,
+    Expression<int>? id,
+    Expression<int>? receiptId,
+    Expression<String>? description,
+    Expression<int>? amountCents,
+    Expression<int>? sortOrder,
+  }) {
+    return RawValuesInsertable({
+      if (syncId != null) 'sync_id': syncId,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (id != null) 'id': id,
+      if (receiptId != null) 'receipt_id': receiptId,
+      if (description != null) 'description': description,
+      if (amountCents != null) 'amount_cents': amountCents,
+      if (sortOrder != null) 'sort_order': sortOrder,
+    });
+  }
+
+  ReceiptLinesCompanion copyWith({
+    Value<String>? syncId,
+    Value<DateTime>? createdAt,
+    Value<DateTime>? updatedAt,
+    Value<int>? id,
+    Value<int>? receiptId,
+    Value<String>? description,
+    Value<int>? amountCents,
+    Value<int>? sortOrder,
+  }) {
+    return ReceiptLinesCompanion(
+      syncId: syncId ?? this.syncId,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      id: id ?? this.id,
+      receiptId: receiptId ?? this.receiptId,
+      description: description ?? this.description,
+      amountCents: amountCents ?? this.amountCents,
+      sortOrder: sortOrder ?? this.sortOrder,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (syncId.present) {
+      map['sync_id'] = Variable<String>(syncId.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (receiptId.present) {
+      map['receipt_id'] = Variable<int>(receiptId.value);
+    }
+    if (description.present) {
+      map['description'] = Variable<String>(description.value);
+    }
+    if (amountCents.present) {
+      map['amount_cents'] = Variable<int>(amountCents.value);
+    }
+    if (sortOrder.present) {
+      map['sort_order'] = Variable<int>(sortOrder.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ReceiptLinesCompanion(')
+          ..write('syncId: $syncId, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('id: $id, ')
+          ..write('receiptId: $receiptId, ')
+          ..write('description: $description, ')
+          ..write('amountCents: $amountCents, ')
+          ..write('sortOrder: $sortOrder')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$GrimstockDatabase extends GeneratedDatabase {
   _$GrimstockDatabase(QueryExecutor e) : super(e);
   $GrimstockDatabaseManager get managers => $GrimstockDatabaseManager(this);
@@ -5670,6 +6979,8 @@ abstract class _$GrimstockDatabase extends GeneratedDatabase {
   late final $ItemPhotosTable itemPhotos = $ItemPhotosTable(this);
   late final $SalesTable sales = $SalesTable(this);
   late final $ExpensesTable expenses = $ExpensesTable(this);
+  late final $ReceiptsTable receipts = $ReceiptsTable(this);
+  late final $ReceiptLinesTable receiptLines = $ReceiptLinesTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -5685,6 +6996,8 @@ abstract class _$GrimstockDatabase extends GeneratedDatabase {
     itemPhotos,
     sales,
     expenses,
+    receipts,
+    receiptLines,
   ];
 }
 
@@ -9861,6 +11174,30 @@ typedef $$ExpensesTableUpdateCompanionBuilder = ExpensesCompanion Function({
   Value<double?> miles,
 });
 
+final class $$ExpensesTableReferences
+    extends BaseReferences<_$GrimstockDatabase, $ExpensesTable, Expense> {
+  $$ExpensesTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static MultiTypedResultKey<$ReceiptsTable, List<Receipt>> _receiptsRefsTable(
+    _$GrimstockDatabase db,
+  ) => MultiTypedResultKey.fromTable(
+    db.receipts,
+    aliasName: 'expenses__id__receipts__expense_id',
+  );
+
+  $$ReceiptsTableProcessedTableManager get receiptsRefs {
+    final manager = $$ReceiptsTableTableManager(
+      $_db,
+      $_db.receipts,
+    ).filter((f) => f.expenseId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_receiptsRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+}
+
 class $$ExpensesTableFilterComposer
     extends Composer<_$GrimstockDatabase, $ExpensesTable> {
   $$ExpensesTableFilterComposer({
@@ -9914,6 +11251,31 @@ class $$ExpensesTableFilterComposer
     column: $table.miles,
     builder: (column) => ColumnFilters(column),
   );
+
+  Expression<bool> receiptsRefs(
+    Expression<bool> Function($$ReceiptsTableFilterComposer f) f,
+  ) {
+    final $$ReceiptsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.receipts,
+      getReferencedColumn: (t) => t.expenseId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ReceiptsTableFilterComposer(
+            $db: $db,
+            $table: $db.receipts,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$ExpensesTableOrderingComposer
@@ -10010,6 +11372,31 @@ class $$ExpensesTableAnnotationComposer
 
   GeneratedColumn<double> get miles =>
       $composableBuilder(column: $table.miles, builder: (column) => column);
+
+  Expression<T> receiptsRefs<T extends Object>(
+    Expression<T> Function($$ReceiptsTableAnnotationComposer a) f,
+  ) {
+    final $$ReceiptsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.receipts,
+      getReferencedColumn: (t) => t.expenseId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ReceiptsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.receipts,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$ExpensesTableTableManager
@@ -10023,12 +11410,9 @@ class $$ExpensesTableTableManager
           $$ExpensesTableAnnotationComposer,
           $$ExpensesTableCreateCompanionBuilder,
           $$ExpensesTableUpdateCompanionBuilder,
-          (
-            Expense,
-            BaseReferences<_$GrimstockDatabase, $ExpensesTable, Expense>,
-          ),
+          (Expense, $$ExpensesTableReferences),
           Expense,
-          PrefetchHooks Function()
+          PrefetchHooks Function({bool receiptsRefs})
         > {
   $$ExpensesTableTableManager(_$GrimstockDatabase db, $ExpensesTable table)
     : super(
@@ -10089,15 +11473,32 @@ class $$ExpensesTableTableManager
               .map(
                 (e) => (
                   e.readTable<$ExpensesTable, Expense>(table),
-                  BaseReferences<_$GrimstockDatabase, $ExpensesTable, Expense>(
-                    db,
-                    table,
-                    e,
-                  ),
+                  $$ExpensesTableReferences(db, table, e),
                 ),
               )
               .toList(),
-          prefetchHooksCallback: null,
+          prefetchHooksCallback: ({receiptsRefs = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [if (receiptsRefs) db.receipts],
+              addJoins: null,
+              getPrefetchedDataCallback: (items) async {
+                return [
+                  if (receiptsRefs)
+                    await $_getPrefetchedData<Expense, $ExpensesTable, Receipt>(
+                      currentTable: table,
+                      referencedTable: $$ExpensesTableReferences
+                          ._receiptsRefsTable(db),
+                      managerFromTypedResult: (p0) =>
+                          $$ExpensesTableReferences(db, table, p0).receiptsRefs,
+                      referencedItemsForCurrentItem: (item, referencedItems) =>
+                          referencedItems.where((e) => e.expenseId == item.id),
+                      typedResults: items,
+                    ),
+                ];
+              },
+            );
+          },
         ),
       );
 }
@@ -10112,9 +11513,962 @@ typedef $$ExpensesTableProcessedTableManager =
       $$ExpensesTableAnnotationComposer,
       $$ExpensesTableCreateCompanionBuilder,
       $$ExpensesTableUpdateCompanionBuilder,
-      (Expense, BaseReferences<_$GrimstockDatabase, $ExpensesTable, Expense>),
+      (Expense, $$ExpensesTableReferences),
       Expense,
-      PrefetchHooks Function()
+      PrefetchHooks Function({bool receiptsRefs})
+    >;
+typedef $$ReceiptsTableCreateCompanionBuilder = ReceiptsCompanion Function({
+  Value<String> syncId,
+  Value<DateTime> createdAt,
+  Value<DateTime> updatedAt,
+  Value<int> id,
+  required String store,
+  required DateTime purchasedAt,
+  Value<String> purpose,
+  Value<int?> subtotalCents,
+  Value<int> taxCents,
+  required int totalCents,
+  Value<String?> photoPath,
+  Value<String?> scannedText,
+  Value<String?> notes,
+  Value<int?> expenseId,
+});
+typedef $$ReceiptsTableUpdateCompanionBuilder = ReceiptsCompanion Function({
+  Value<String> syncId,
+  Value<DateTime> createdAt,
+  Value<DateTime> updatedAt,
+  Value<int> id,
+  Value<String> store,
+  Value<DateTime> purchasedAt,
+  Value<String> purpose,
+  Value<int?> subtotalCents,
+  Value<int> taxCents,
+  Value<int> totalCents,
+  Value<String?> photoPath,
+  Value<String?> scannedText,
+  Value<String?> notes,
+  Value<int?> expenseId,
+});
+
+final class $$ReceiptsTableReferences
+    extends BaseReferences<_$GrimstockDatabase, $ReceiptsTable, Receipt> {
+  $$ReceiptsTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $ExpensesTable _expenseIdTable(_$GrimstockDatabase db) =>
+      db.expenses.createAlias('receipts__expense_id__expenses__id');
+
+  $$ExpensesTableProcessedTableManager? get expenseId {
+    final $_column = $_itemColumn<int>('expense_id');
+    if ($_column == null) return null;
+    final manager = $$ExpensesTableTableManager(
+      $_db,
+      $_db.expenses,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_expenseIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static MultiTypedResultKey<$ReceiptLinesTable, List<ReceiptLine>>
+  _receiptLinesRefsTable(_$GrimstockDatabase db) =>
+      MultiTypedResultKey.fromTable(
+        db.receiptLines,
+        aliasName: 'receipts__id__receipt_lines__receipt_id',
+      );
+
+  $$ReceiptLinesTableProcessedTableManager get receiptLinesRefs {
+    final manager = $$ReceiptLinesTableTableManager(
+      $_db,
+      $_db.receiptLines,
+    ).filter((f) => f.receiptId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_receiptLinesRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+}
+
+class $$ReceiptsTableFilterComposer
+    extends Composer<_$GrimstockDatabase, $ReceiptsTable> {
+  $$ReceiptsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get syncId => $composableBuilder(
+    column: $table.syncId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get store => $composableBuilder(
+    column: $table.store,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get purchasedAt => $composableBuilder(
+    column: $table.purchasedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get purpose => $composableBuilder(
+    column: $table.purpose,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get subtotalCents => $composableBuilder(
+    column: $table.subtotalCents,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get taxCents => $composableBuilder(
+    column: $table.taxCents,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get totalCents => $composableBuilder(
+    column: $table.totalCents,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get photoPath => $composableBuilder(
+    column: $table.photoPath,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get scannedText => $composableBuilder(
+    column: $table.scannedText,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get notes => $composableBuilder(
+    column: $table.notes,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$ExpensesTableFilterComposer get expenseId {
+    final $$ExpensesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.expenseId,
+      referencedTable: $db.expenses,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ExpensesTableFilterComposer(
+            $db: $db,
+            $table: $db.expenses,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  Expression<bool> receiptLinesRefs(
+    Expression<bool> Function($$ReceiptLinesTableFilterComposer f) f,
+  ) {
+    final $$ReceiptLinesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.receiptLines,
+      getReferencedColumn: (t) => t.receiptId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ReceiptLinesTableFilterComposer(
+            $db: $db,
+            $table: $db.receiptLines,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$ReceiptsTableOrderingComposer
+    extends Composer<_$GrimstockDatabase, $ReceiptsTable> {
+  $$ReceiptsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get syncId => $composableBuilder(
+    column: $table.syncId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get store => $composableBuilder(
+    column: $table.store,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get purchasedAt => $composableBuilder(
+    column: $table.purchasedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get purpose => $composableBuilder(
+    column: $table.purpose,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get subtotalCents => $composableBuilder(
+    column: $table.subtotalCents,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get taxCents => $composableBuilder(
+    column: $table.taxCents,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get totalCents => $composableBuilder(
+    column: $table.totalCents,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get photoPath => $composableBuilder(
+    column: $table.photoPath,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get scannedText => $composableBuilder(
+    column: $table.scannedText,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get notes => $composableBuilder(
+    column: $table.notes,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$ExpensesTableOrderingComposer get expenseId {
+    final $$ExpensesTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.expenseId,
+      referencedTable: $db.expenses,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ExpensesTableOrderingComposer(
+            $db: $db,
+            $table: $db.expenses,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$ReceiptsTableAnnotationComposer
+    extends Composer<_$GrimstockDatabase, $ReceiptsTable> {
+  $$ReceiptsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get syncId =>
+      $composableBuilder(column: $table.syncId, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get store =>
+      $composableBuilder(column: $table.store, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get purchasedAt => $composableBuilder(
+    column: $table.purchasedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get purpose =>
+      $composableBuilder(column: $table.purpose, builder: (column) => column);
+
+  GeneratedColumn<int> get subtotalCents => $composableBuilder(
+    column: $table.subtotalCents,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get taxCents =>
+      $composableBuilder(column: $table.taxCents, builder: (column) => column);
+
+  GeneratedColumn<int> get totalCents => $composableBuilder(
+    column: $table.totalCents,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get photoPath =>
+      $composableBuilder(column: $table.photoPath, builder: (column) => column);
+
+  GeneratedColumn<String> get scannedText => $composableBuilder(
+    column: $table.scannedText,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get notes =>
+      $composableBuilder(column: $table.notes, builder: (column) => column);
+
+  $$ExpensesTableAnnotationComposer get expenseId {
+    final $$ExpensesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.expenseId,
+      referencedTable: $db.expenses,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ExpensesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.expenses,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  Expression<T> receiptLinesRefs<T extends Object>(
+    Expression<T> Function($$ReceiptLinesTableAnnotationComposer a) f,
+  ) {
+    final $$ReceiptLinesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.receiptLines,
+      getReferencedColumn: (t) => t.receiptId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ReceiptLinesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.receiptLines,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$ReceiptsTableTableManager
+    extends
+        RootTableManager<
+          _$GrimstockDatabase,
+          $ReceiptsTable,
+          Receipt,
+          $$ReceiptsTableFilterComposer,
+          $$ReceiptsTableOrderingComposer,
+          $$ReceiptsTableAnnotationComposer,
+          $$ReceiptsTableCreateCompanionBuilder,
+          $$ReceiptsTableUpdateCompanionBuilder,
+          (Receipt, $$ReceiptsTableReferences),
+          Receipt,
+          PrefetchHooks Function({bool expenseId, bool receiptLinesRefs})
+        > {
+  $$ReceiptsTableTableManager(_$GrimstockDatabase db, $ReceiptsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$ReceiptsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ReceiptsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$ReceiptsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> syncId = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<int> id = const Value.absent(),
+                Value<String> store = const Value.absent(),
+                Value<DateTime> purchasedAt = const Value.absent(),
+                Value<String> purpose = const Value.absent(),
+                Value<int?> subtotalCents = const Value.absent(),
+                Value<int> taxCents = const Value.absent(),
+                Value<int> totalCents = const Value.absent(),
+                Value<String?> photoPath = const Value.absent(),
+                Value<String?> scannedText = const Value.absent(),
+                Value<String?> notes = const Value.absent(),
+                Value<int?> expenseId = const Value.absent(),
+              }) => ReceiptsCompanion(
+                syncId: syncId,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                id: id,
+                store: store,
+                purchasedAt: purchasedAt,
+                purpose: purpose,
+                subtotalCents: subtotalCents,
+                taxCents: taxCents,
+                totalCents: totalCents,
+                photoPath: photoPath,
+                scannedText: scannedText,
+                notes: notes,
+                expenseId: expenseId,
+              ),
+          createCompanionCallback:
+              ({
+                Value<String> syncId = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<int> id = const Value.absent(),
+                required String store,
+                required DateTime purchasedAt,
+                Value<String> purpose = const Value.absent(),
+                Value<int?> subtotalCents = const Value.absent(),
+                Value<int> taxCents = const Value.absent(),
+                required int totalCents,
+                Value<String?> photoPath = const Value.absent(),
+                Value<String?> scannedText = const Value.absent(),
+                Value<String?> notes = const Value.absent(),
+                Value<int?> expenseId = const Value.absent(),
+              }) => ReceiptsCompanion.insert(
+                syncId: syncId,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                id: id,
+                store: store,
+                purchasedAt: purchasedAt,
+                purpose: purpose,
+                subtotalCents: subtotalCents,
+                taxCents: taxCents,
+                totalCents: totalCents,
+                photoPath: photoPath,
+                scannedText: scannedText,
+                notes: notes,
+                expenseId: expenseId,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$ReceiptsTable, Receipt>(table),
+                  $$ReceiptsTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback:
+              ({expenseId = false, receiptLinesRefs = false}) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [
+                    if (receiptLinesRefs) db.receiptLines,
+                  ],
+                  addJoins:
+                      <
+                        T extends TableManagerState<
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic
+                        >
+                      >(state) {
+                        if (expenseId) {
+                          state = state.withJoin(
+                            currentTable: table,
+                            currentColumn: table.expenseId,
+                            referencedTable: $$ReceiptsTableReferences
+                                ._expenseIdTable(db),
+                            referencedColumn: $$ReceiptsTableReferences
+                                ._expenseIdTable(db)
+                                .id,
+                          ) as T;
+                        }
+
+                        return state;
+                      },
+                  getPrefetchedDataCallback: (items) async {
+                    return [
+                      if (receiptLinesRefs)
+                        await $_getPrefetchedData<
+                          Receipt,
+                          $ReceiptsTable,
+                          ReceiptLine
+                        >(
+                          currentTable: table,
+                          referencedTable: $$ReceiptsTableReferences
+                              ._receiptLinesRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$ReceiptsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).receiptLinesRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.receiptId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                    ];
+                  },
+                );
+              },
+        ),
+      );
+}
+
+typedef $$ReceiptsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$GrimstockDatabase,
+      $ReceiptsTable,
+      Receipt,
+      $$ReceiptsTableFilterComposer,
+      $$ReceiptsTableOrderingComposer,
+      $$ReceiptsTableAnnotationComposer,
+      $$ReceiptsTableCreateCompanionBuilder,
+      $$ReceiptsTableUpdateCompanionBuilder,
+      (Receipt, $$ReceiptsTableReferences),
+      Receipt,
+      PrefetchHooks Function({bool expenseId, bool receiptLinesRefs})
+    >;
+typedef $$ReceiptLinesTableCreateCompanionBuilder =
+    ReceiptLinesCompanion Function({
+      Value<String> syncId,
+      Value<DateTime> createdAt,
+      Value<DateTime> updatedAt,
+      Value<int> id,
+      required int receiptId,
+      required String description,
+      required int amountCents,
+      Value<int> sortOrder,
+    });
+typedef $$ReceiptLinesTableUpdateCompanionBuilder =
+    ReceiptLinesCompanion Function({
+      Value<String> syncId,
+      Value<DateTime> createdAt,
+      Value<DateTime> updatedAt,
+      Value<int> id,
+      Value<int> receiptId,
+      Value<String> description,
+      Value<int> amountCents,
+      Value<int> sortOrder,
+    });
+
+final class $$ReceiptLinesTableReferences
+    extends
+        BaseReferences<_$GrimstockDatabase, $ReceiptLinesTable, ReceiptLine> {
+  $$ReceiptLinesTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $ReceiptsTable _receiptIdTable(_$GrimstockDatabase db) =>
+      db.receipts.createAlias('receipt_lines__receipt_id__receipts__id');
+
+  $$ReceiptsTableProcessedTableManager get receiptId {
+    final $_column = $_itemColumn<int>('receipt_id')!;
+
+    final manager = $$ReceiptsTableTableManager(
+      $_db,
+      $_db.receipts,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_receiptIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$ReceiptLinesTableFilterComposer
+    extends Composer<_$GrimstockDatabase, $ReceiptLinesTable> {
+  $$ReceiptLinesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get syncId => $composableBuilder(
+    column: $table.syncId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get amountCents => $composableBuilder(
+    column: $table.amountCents,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get sortOrder => $composableBuilder(
+    column: $table.sortOrder,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$ReceiptsTableFilterComposer get receiptId {
+    final $$ReceiptsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.receiptId,
+      referencedTable: $db.receipts,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ReceiptsTableFilterComposer(
+            $db: $db,
+            $table: $db.receipts,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$ReceiptLinesTableOrderingComposer
+    extends Composer<_$GrimstockDatabase, $ReceiptLinesTable> {
+  $$ReceiptLinesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get syncId => $composableBuilder(
+    column: $table.syncId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get amountCents => $composableBuilder(
+    column: $table.amountCents,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get sortOrder => $composableBuilder(
+    column: $table.sortOrder,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$ReceiptsTableOrderingComposer get receiptId {
+    final $$ReceiptsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.receiptId,
+      referencedTable: $db.receipts,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ReceiptsTableOrderingComposer(
+            $db: $db,
+            $table: $db.receipts,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$ReceiptLinesTableAnnotationComposer
+    extends Composer<_$GrimstockDatabase, $ReceiptLinesTable> {
+  $$ReceiptLinesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get syncId =>
+      $composableBuilder(column: $table.syncId, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get amountCents => $composableBuilder(
+    column: $table.amountCents,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get sortOrder =>
+      $composableBuilder(column: $table.sortOrder, builder: (column) => column);
+
+  $$ReceiptsTableAnnotationComposer get receiptId {
+    final $$ReceiptsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.receiptId,
+      referencedTable: $db.receipts,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$ReceiptsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.receipts,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$ReceiptLinesTableTableManager
+    extends
+        RootTableManager<
+          _$GrimstockDatabase,
+          $ReceiptLinesTable,
+          ReceiptLine,
+          $$ReceiptLinesTableFilterComposer,
+          $$ReceiptLinesTableOrderingComposer,
+          $$ReceiptLinesTableAnnotationComposer,
+          $$ReceiptLinesTableCreateCompanionBuilder,
+          $$ReceiptLinesTableUpdateCompanionBuilder,
+          (ReceiptLine, $$ReceiptLinesTableReferences),
+          ReceiptLine,
+          PrefetchHooks Function({bool receiptId})
+        > {
+  $$ReceiptLinesTableTableManager(
+    _$GrimstockDatabase db,
+    $ReceiptLinesTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$ReceiptLinesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ReceiptLinesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$ReceiptLinesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> syncId = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<int> id = const Value.absent(),
+                Value<int> receiptId = const Value.absent(),
+                Value<String> description = const Value.absent(),
+                Value<int> amountCents = const Value.absent(),
+                Value<int> sortOrder = const Value.absent(),
+              }) => ReceiptLinesCompanion(
+                syncId: syncId,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                id: id,
+                receiptId: receiptId,
+                description: description,
+                amountCents: amountCents,
+                sortOrder: sortOrder,
+              ),
+          createCompanionCallback:
+              ({
+                Value<String> syncId = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<int> id = const Value.absent(),
+                required int receiptId,
+                required String description,
+                required int amountCents,
+                Value<int> sortOrder = const Value.absent(),
+              }) => ReceiptLinesCompanion.insert(
+                syncId: syncId,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                id: id,
+                receiptId: receiptId,
+                description: description,
+                amountCents: amountCents,
+                sortOrder: sortOrder,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$ReceiptLinesTable, ReceiptLine>(table),
+                  $$ReceiptLinesTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({receiptId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (receiptId) {
+                      state = state.withJoin(
+                        currentTable: table,
+                        currentColumn: table.receiptId,
+                        referencedTable: $$ReceiptLinesTableReferences
+                            ._receiptIdTable(db),
+                        referencedColumn: $$ReceiptLinesTableReferences
+                            ._receiptIdTable(db)
+                            .id,
+                      ) as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$ReceiptLinesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$GrimstockDatabase,
+      $ReceiptLinesTable,
+      ReceiptLine,
+      $$ReceiptLinesTableFilterComposer,
+      $$ReceiptLinesTableOrderingComposer,
+      $$ReceiptLinesTableAnnotationComposer,
+      $$ReceiptLinesTableCreateCompanionBuilder,
+      $$ReceiptLinesTableUpdateCompanionBuilder,
+      (ReceiptLine, $$ReceiptLinesTableReferences),
+      ReceiptLine,
+      PrefetchHooks Function({bool receiptId})
     >;
 
 class $GrimstockDatabaseManager {
@@ -10140,4 +12494,8 @@ class $GrimstockDatabaseManager {
       $$SalesTableTableManager(_db, _db.sales);
   $$ExpensesTableTableManager get expenses =>
       $$ExpensesTableTableManager(_db, _db.expenses);
+  $$ReceiptsTableTableManager get receipts =>
+      $$ReceiptsTableTableManager(_db, _db.receipts);
+  $$ReceiptLinesTableTableManager get receiptLines =>
+      $$ReceiptLinesTableTableManager(_db, _db.receiptLines);
 }

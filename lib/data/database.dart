@@ -140,6 +140,33 @@ class Expenses extends Table with SyncColumns {
   RealColumn get miles => real().nullable()();
 }
 
+/// A scanned purchase receipt, kept for taxes. [purpose] is 'inventory'
+/// (stock bought to resell; its cost is on the items) or 'expense' (a
+/// business cost, mirrored as the linked [expenseId] so it counts in profit).
+class Receipts extends Table with SyncColumns {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get store => text()();
+  DateTimeColumn get purchasedAt => dateTime()();
+  TextColumn get purpose => text().withDefault(const Constant('inventory'))();
+  IntColumn get subtotalCents => integer().nullable()();
+  IntColumn get taxCents => integer().withDefault(const Constant(0))();
+  IntColumn get totalCents => integer()();
+  TextColumn get photoPath => text().nullable()();
+
+  /// Everything read off the photo, kept in case the parsing missed something.
+  TextColumn get scannedText => text().nullable()();
+  TextColumn get notes => text().nullable()();
+  IntColumn get expenseId => integer().nullable().references(Expenses, #id)();
+}
+
+class ReceiptLines extends Table with SyncColumns {
+  IntColumn get id => integer().autoIncrement()();
+  IntColumn get receiptId => integer().references(Receipts, #id)();
+  TextColumn get description => text()();
+  IntColumn get amountCents => integer()();
+  IntColumn get sortOrder => integer().withDefault(const Constant(0))();
+}
+
 /// Small app settings, e.g. the mileage rate. Kept on this device.
 class AppSettings extends Table {
   TextColumn get key => text()();
@@ -161,6 +188,8 @@ class AppSettings extends Table {
     ItemPhotos,
     Sales,
     Expenses,
+    Receipts,
+    ReceiptLines,
   ],
 )
 class GrimstockDatabase extends _$GrimstockDatabase {
@@ -168,7 +197,7 @@ class GrimstockDatabase extends _$GrimstockDatabase {
     : super(executor ?? driftDatabase(name: 'grimstock'));
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -180,6 +209,11 @@ class GrimstockDatabase extends _$GrimstockDatabase {
       // Version 2 (test builds from 2026-10-06): Appliances category.
       if (from < 2) {
         await _addCategory('Appliances', ['Model', 'Serial number']);
+      }
+      // Version 3 (2026-10-08): scanned receipts.
+      if (from < 3) {
+        await m.createTable(receipts);
+        await m.createTable(receiptLines);
       }
     },
     beforeOpen: (details) async {

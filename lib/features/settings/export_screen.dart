@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
@@ -10,6 +11,8 @@ import '../../core/money.dart';
 import '../../data/export.dart';
 import '../../data/providers.dart';
 import '../../theme/grim_theme.dart';
+
+final _fileDate = DateFormat('yyyy-MM-dd');
 
 /// Date ranges offered for export, built around tax years.
 enum ExportRange {
@@ -99,6 +102,37 @@ class _ExportScreenState extends ConsumerState<ExportScreen> {
       if (which.contains('inventory')) {
         await write('inventory', exporter.inventoryCsv());
       }
+      if (which.contains('receipts')) {
+        // Receipt photos go along, named so the spreadsheet can point at them.
+        final receipts = await ref
+            .read(receiptRepositoryProvider)
+            .watchReceipts(from: from, to: to)
+            .first;
+        final photoNames = <int, String>{};
+        for (final r in receipts) {
+          final photo = r.photoPath;
+          if (photo == null || !await File(photo).exists()) continue;
+          final store = r.store
+              .toLowerCase()
+              .replaceAll(RegExp('[^a-z0-9]+'), '-')
+              .replaceAll(RegExp(r'^-|-$'), '');
+          final name =
+              'receipt-${_fileDate.format(r.purchasedAt)}-$store-${r.id}.jpg';
+          await File(photo).copy(p.join(dir.path, name));
+          photoNames[r.id] = name;
+        }
+        await write(
+          'receipts',
+          exporter.receiptsCsv(from: from, to: to, photoNames: photoNames),
+        );
+        await write(
+          'receipt-items',
+          exporter.receiptItemsCsv(from: from, to: to),
+        );
+        for (final name in photoNames.values) {
+          files.add(XFile(p.join(dir.path, name), mimeType: 'image/jpeg'));
+        }
+      }
       await SharePlus.instance.share(
         ShareParams(files: files, subject: 'Grimstock export ($tag)'),
       );
@@ -160,7 +194,13 @@ class _ExportScreenState extends ConsumerState<ExportScreen> {
           FilledButton.icon(
             onPressed: _busy
                 ? null
-                : () => _share({'pnl', 'sales', 'expenses', 'inventory'}),
+                : () => _share({
+                    'pnl',
+                    'sales',
+                    'expenses',
+                    'inventory',
+                    'receipts',
+                  }),
             icon: const Icon(Icons.ios_share),
             label: const Text('Export everything'),
           ),
@@ -170,6 +210,11 @@ class _ExportScreenState extends ConsumerState<ExportScreen> {
             ('sales', 'Sales', 'Every sale with fees, cost and profit'),
             ('expenses', 'Expenses', 'Supplies, subscriptions and mileage'),
             ('inventory', 'Inventory', 'Everything you own right now'),
+            (
+              'receipts',
+              'Receipts',
+              'Every receipt and its items, with the photos',
+            ),
           ])
             ListTile(
               contentPadding: EdgeInsets.zero,

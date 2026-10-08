@@ -7,6 +7,8 @@ import 'export.dart';
 import 'item_repository.dart';
 import 'photo_store.dart';
 import 'pro.dart';
+import 'receipt_reader.dart';
+import 'receipt_repository.dart';
 import 'insights.dart';
 import 'sales_repository.dart';
 import 'upc_lookup.dart';
@@ -171,7 +173,23 @@ final exporterProvider = Provider<Exporter>(
     ref.watch(databaseProvider),
     ref.watch(salesRepositoryProvider),
     ref.watch(expenseRepositoryProvider),
+    ref.watch(receiptRepositoryProvider),
   ),
+);
+
+final receiptRepositoryProvider = Provider<ReceiptRepository>(
+  (ref) => ReceiptRepository(
+    ref.watch(databaseProvider),
+    ref.watch(expenseRepositoryProvider),
+  ),
+);
+
+final receiptsProvider = StreamProvider<List<Receipt>>(
+  (ref) => ref.watch(receiptRepositoryProvider).watchReceipts(),
+);
+
+final receiptReaderProvider = Provider<ReceiptReader>(
+  (ref) => MlKitReceiptReader(),
 );
 
 final upcLookupProvider = Provider<UpcLookup>((ref) {
