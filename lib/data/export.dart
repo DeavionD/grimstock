@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'database.dart';
 import 'expense_repository.dart';
 import 'item_repository.dart';
+import 'receipt_repository.dart';
 import 'sales_repository.dart';
 
 /// Turns rows into CSV, quoting values that contain commas, quotes or
@@ -102,11 +103,78 @@ class ProfitAndLoss {
 /// Builds the CSV files for export. [from] and [to] limit sales and
 /// expenses to a date range (to is exclusive); inventory is always current.
 class Exporter {
-  Exporter(this.db, this.sales, this.expenses);
+  Exporter(this.db, this.sales, this.expenses, this.receipts);
 
   final GrimstockDatabase db;
   final SalesRepository sales;
   final ExpenseRepository expenses;
+  final ReceiptRepository receipts;
+
+  /// One row per receipt. [photoNames] maps a receipt id to the name its
+  /// photo is shared under, so the spreadsheet points at the right image.
+  Future<String> receiptsCsv({
+    DateTime? from,
+    DateTime? to,
+    Map<int, String> photoNames = const {},
+  }) async {
+    final list = (await receipts.watchReceipts(from: from, to: to).first)
+        .reversed
+        .toList();
+    final lines = await receipts.linesFor([for (final r in list) r.id]);
+    return toCsv([
+      [
+        'Date',
+        'Store',
+        'Purpose',
+        'Items',
+        'Subtotal',
+        'Tax',
+        'Total',
+        'Notes',
+        'Photo',
+      ],
+      for (final r in list)
+        [
+          _day(r.purchasedAt),
+          r.store,
+          r.receiptPurpose.label,
+          [
+            for (final l in lines)
+              if (l.receiptId == r.id) l.description,
+          ].join('; '),
+          r.subtotalCents == null ? '' : _money(r.subtotalCents!),
+          _money(r.taxCents),
+          _money(r.totalCents),
+          r.notes,
+          photoNames[r.id],
+        ],
+    ]);
+  }
+
+  /// One row per line item on every receipt, for itemized records.
+  Future<String> receiptItemsCsv({DateTime? from, DateTime? to}) async {
+    final list = (await receipts.watchReceipts(from: from, to: to).first)
+        .reversed
+        .toList();
+    final byId = {for (final r in list) r.id: r};
+    final lines = await receipts.linesFor(byId.keys.toList());
+    lines.sort((a, b) {
+      final date = byId[a.receiptId]!.purchasedAt.compareTo(
+        byId[b.receiptId]!.purchasedAt,
+      );
+      return date != 0 ? date : a.sortOrder.compareTo(b.sortOrder);
+    });
+    return toCsv([
+      ['Date', 'Store', 'Item', 'Amount'],
+      for (final l in lines)
+        [
+          _day(byId[l.receiptId]!.purchasedAt),
+          byId[l.receiptId]!.store,
+          l.description,
+          _money(l.amountCents),
+        ],
+    ]);
+  }
 
   Future<String> inventoryCsv() async {
     final rows = await db.select(db.items).join([

@@ -25,6 +25,11 @@ enum ProFeature {
     'Expenses and mileage',
     'Supplies, subscriptions and miles come out of your profit.',
   ),
+  receipts(
+    'Receipt scanning',
+    'Snap a receipt to save its photo, store, items, tax and total for '
+        'your taxes.',
+  ),
   export(
     'CSV and tax export',
     'Inventory, sales, expenses and a profit and loss summary.',

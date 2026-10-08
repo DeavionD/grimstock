@@ -39,6 +39,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         title: const Text('Grimstock'),
         actions: [
           IconButton(
+            tooltip: 'Receipts',
+            icon: const Icon(Icons.document_scanner_outlined),
+            onPressed: () => ref.read(isProProvider)
+                ? context.push('/receipts')
+                : showPaywall(context),
+          ),
+          IconButton(
             tooltip: 'Expenses',
             icon: const Icon(Icons.receipt_long_outlined),
             onPressed: () => ref.read(isProProvider)

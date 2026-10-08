@@ -50,6 +50,13 @@ Built with Flutter for iOS and Android. The product plan lives in the project's 
 - Calculator "What to list for": enter what you paid and the profit or ROI you want, and see the lowest list price on every platform after fees (`listPriceFor` in `lib/data/deal_check.dart`)
 - Pro deal check: scan a barcode in the Calculator to look up the product, then get a green (good buy), yellow (buy at your own risk) or red (not worth it) check from the ROI and how fast you've sold that item before. It uses your own Sold archive for now; market-wide sold prices need a paid data source later
 
+## Receipts (Pro)
+
+- Snap a purchase receipt from Home's receipt icon. Text is read on the phone with Google ML Kit (free, works offline, the photo never leaves the device) and parsed into store, date, items, subtotal, tax and total (`lib/data/receipt_parser.dart`) for the user to check
+- Receipts keep their photo. Marking one a business expense also saves it as an expense, so it comes out of profit; stock receipts are kept for records only, since item costs are already tracked
+- Export adds a receipts spreadsheet, an itemized receipt spreadsheet and the receipt photos, named to match the spreadsheet (`Exporter.receiptsCsv`)
+- Schema version 3 adds the receipt tables. iOS needs 15.5 or later for ML Kit
+
 ## Test APK
 
 Every push to `main` and every pull request builds an Android APK with the Pro test switch (`.github/workflows/test-apk.yml`). Download `grimstock-test-apk` from the workflow run's Artifacts, unzip it, and install `app-release.apk` on an Android phone (allow installs from your browser or files app when asked).

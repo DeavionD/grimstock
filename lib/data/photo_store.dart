@@ -16,12 +16,18 @@ class PhotoStore {
   /// Opens the camera or photo library and returns the saved copy's path,
   /// or null if the user cancelled. Photos are resized and compressed to
   /// keep storage (and later cloud sync) small.
-  Future<String?> pick({required bool fromCamera}) async {
+  /// [maxSize] is the longest side in pixels; receipts use more so small
+  /// print stays readable.
+  Future<String?> pick({
+    required bool fromCamera,
+    double maxSize = 1600,
+    int quality = 80,
+  }) async {
     final picked = await _picker.pickImage(
       source: fromCamera ? ImageSource.camera : ImageSource.gallery,
-      maxWidth: 1600,
-      maxHeight: 1600,
-      imageQuality: 80,
+      maxWidth: maxSize,
+      maxHeight: maxSize,
+      imageQuality: quality,
     );
     if (picked == null) return null;
     final dir = Directory(

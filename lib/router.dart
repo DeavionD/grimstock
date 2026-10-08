@@ -11,6 +11,8 @@ import 'features/inventory/item_detail_screen.dart';
 import 'features/inventory/item_form_screen.dart';
 import 'features/inventory/sell_screen.dart';
 import 'features/pro/paywall_screen.dart';
+import 'features/receipts/receipt_form_screen.dart';
+import 'features/receipts/receipts_screen.dart';
 import 'features/settings/export_screen.dart';
 import 'features/settings/platform_edit_screen.dart';
 import 'features/settings/settings_screen.dart';
@@ -80,6 +82,22 @@ GoRouter createRouter() => GoRouter(
         GoRoute(
           path: ':id',
           builder: (context, state) => ExpenseFormScreen(expenseId: _id(state)),
+        ),
+      ],
+    ),
+    GoRoute(
+      path: '/receipts',
+      builder: (context, state) => const ReceiptsScreen(),
+      routes: [
+        GoRoute(
+          path: 'new',
+          builder: (context, state) => ReceiptFormScreen(
+            photoPath: state.extra is String ? state.extra! as String : null,
+          ),
+        ),
+        GoRoute(
+          path: ':id',
+          builder: (context, state) => ReceiptFormScreen(receiptId: _id(state)),
         ),
       ],
     ),
